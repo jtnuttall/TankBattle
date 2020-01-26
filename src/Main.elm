@@ -8,7 +8,7 @@ import Components.Player as Player
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
 import Keyboard exposing (Key(..))
-import Keyboard.Arrows exposing (arrows)
+import Keyboard.Arrows exposing (wasd)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
 import Utility exposing (mapTuple)
@@ -28,7 +28,7 @@ update msg model =
             else
                 ( { model
                     | count = model.count + 1
-                    , deltaTime = deltaTime
+                    , deltaTime = deltaTime / 1000
                   }
                 , Cmd.none
                 )
@@ -49,7 +49,7 @@ update msg model =
                     Keyboard.update key model.pressedKeys
 
                 { x, y } =
-                    arrows pressedKeys
+                    wasd pressedKeys
 
                 player =
                     model.player
@@ -57,9 +57,17 @@ update msg model =
             ( { model
                 | pressedKeys = pressedKeys
                 , player =
-                    { player
-                        | position = mapTuple ((+) <| toFloat x) ((+) <| negate <| toFloat y) player.position
-                    }
+                    if model.isPaused then
+                        player
+
+                    else
+                        { player
+                            | position =
+                                mapTuple
+                                    ((+) << (*) model.deltaTime << (*) model.speed <| toFloat x)
+                                    ((+) << (*) model.deltaTime << (*) model.speed << negate <| toFloat y)
+                                    player.position
+                        }
               }
             , Cmd.none
             )

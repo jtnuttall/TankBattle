@@ -10,6 +10,7 @@ type alias Model =
     { count : Float
     , deltaTime : Float
     , isPaused : Bool
+    , speed : Float
     , pressedKeys : List Key
     , windowDims : ( Float, Float )
     , gameDims : ( Float, Float )
@@ -34,7 +35,8 @@ init flags =
     in
     ( { count = 0
       , deltaTime = 0
-      , isPaused = True
+      , isPaused = False
+      , speed = 200
       , pressedKeys = []
       , windowDims = ( flags.windowWidth, flags.windowHeight )
       , gameDims = gameDims

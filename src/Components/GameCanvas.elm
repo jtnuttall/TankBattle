@@ -27,13 +27,9 @@ screen ( width, height ) color renderable =
 
 player1 : Model -> List Renderable -> List Renderable
 player1 model renderable =
-    let
-        position =
-            Debug.log "position" model.player.position
-    in
     renderable
         ++ [ shapes [ fill Color.red ]
-                [ rect position
+                [ rect model.player.position
                     50
                     50
                 ]

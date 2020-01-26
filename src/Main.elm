@@ -8,8 +8,10 @@ import Components.Player as Player
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
 import Keyboard exposing (Key(..))
+import Keyboard.Arrows exposing (arrows)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
+import Utility exposing (mapTuple)
 
 
 
@@ -42,7 +44,23 @@ update msg model =
             )
 
         KeyPress key ->
-            ( { model | pressedKeys = Keyboard.update key model.pressedKeys }
+            let
+                pressedKeys =
+                    Keyboard.update key model.pressedKeys
+
+                { x, y } =
+                    arrows pressedKeys
+
+                player =
+                    model.player
+            in
+            ( { model
+                | pressedKeys = pressedKeys
+                , player =
+                    { player
+                        | position = mapTuple ((+) <| toFloat x) ((+) <| negate <| toFloat y) player.position
+                    }
+              }
             , Cmd.none
             )
 
@@ -58,7 +76,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         ( width, height ) =
-            model.windowDims
+            model.gameDims
     in
     { title = "Tank Battle!"
     , body =

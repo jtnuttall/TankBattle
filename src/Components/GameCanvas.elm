@@ -12,7 +12,6 @@ canvas model =
     []
         |> screen model.gameDims Color.black
         |> player1 model
-        |> player2 model
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -34,13 +33,8 @@ player1 model renderable =
     in
     renderable
         ++ [ shapes [ fill Color.red ]
-                [ rect model.player.position
-                    100
-                    100
+                [ rect position
+                    50
+                    50
                 ]
            ]
-
-
-player2 : Model -> List Renderable -> List Renderable
-player2 model renderable =
-    renderable ++ []

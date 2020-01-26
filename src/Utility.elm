@@ -6,3 +6,8 @@ module Utility exposing (..)
 mapTuple : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
 mapTuple f1 f2 =
     Tuple.mapFirst f1 << Tuple.mapSecond f2
+
+
+mapTupleUniform : (a -> b) -> ( a, a ) -> ( b, b )
+mapTupleUniform f =
+    mapTuple f f

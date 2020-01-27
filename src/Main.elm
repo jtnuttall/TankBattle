@@ -11,7 +11,7 @@ import Lib.Keyboard as Keyboard exposing (Key(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
-import Utility exposing (mapTuple)
+import Utility exposing (cycleF, mapTuple)
 
 
 gameKeys : KeyParser
@@ -43,9 +43,6 @@ gameKeys (RawKey key) =
 
 
 
---parser : KeyParser
---parser (RawKey _) =
---    arrowKey
 ---- UPDATE ----
 
 
@@ -82,21 +79,23 @@ update msg model =
                 { x, y } =
                     wasd pressedKeys
 
+                rotate =
+                    toFloat x
+
+                move =
+                    toFloat y
+
                 player =
                     model.player
 
                 transform =
                     model.player.transform
 
-                rotate =
-                    if List.member (Character "Q") pressedKeys then
-                        -1.0
+                xprime =
+                    move * sin (degrees player.rotation)
 
-                    else if List.member (Character "E") pressedKeys then
-                        1.0
-
-                    else
-                        0
+                yprime =
+                    move * cos (degrees player.rotation)
             in
             ( { model
                 | player =
@@ -105,11 +104,11 @@ update msg model =
 
                     else
                         { player
-                            | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * degrees rotate)
+                            | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
                             , position =
                                 mapTuple
-                                    ((+) << (*) model.deltaTime << (*) model.player.moveSpeed <| toFloat x)
-                                    ((+) << (*) model.deltaTime << (*) model.player.moveSpeed << negate <| toFloat y)
+                                    (xprime |> (*) player.moveSpeed |> (*) model.deltaTime |> (+))
+                                    (yprime |> (*) player.moveSpeed |> (*) model.deltaTime |> negate |> (+))
                                     player.position
                             , pressedKeys = pressedKeys
                         }

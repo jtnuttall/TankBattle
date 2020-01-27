@@ -54,7 +54,7 @@ renderTank model renderable =
                 [ fill Color.red
                 , transform <|
                     List.concat
-                        [ rotateAround center player.rotation
+                        [ rotateAround center (degrees player.rotation)
                         ]
                 ]
                 [ rect model.player.position

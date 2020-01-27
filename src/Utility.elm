@@ -16,3 +16,15 @@ mapTupleUniform f =
 uncurry : (a -> b -> c) -> ( a, b ) -> c
 uncurry f ( a, b ) =
     f a b
+
+
+cycleF : Float -> Float -> Float -> Float
+cycleF min max val =
+    if val <= min then
+        max
+
+    else if val >= max then
+        min
+
+    else
+        val

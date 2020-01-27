@@ -1,5 +1,6 @@
 module Components.Player exposing (..)
 
+import Components.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard exposing (Key(..), KeyChange(..))
 import Msg exposing (Msg)
 import Utility exposing (mapTuple)
@@ -16,6 +17,7 @@ type alias Player =
     , pressedKeys : List Key
     , timeSinceFiring : Float
     , isFiring : Bool
+    , projectiles : List Projectile
     }
 
 
@@ -31,6 +33,19 @@ init position playerId playerName =
       , pressedKeys = []
       , timeSinceFiring = 0
       , isFiring = False
+      , projectiles = []
       }
     , Cmd.none
     )
+
+
+center : Player -> ( Float, Float )
+center player =
+    let
+        ( sizex, sizey ) =
+            player.size
+
+        ( x, y ) =
+            player.position
+    in
+    ( x + sizex / 2, y + sizey / 2 )

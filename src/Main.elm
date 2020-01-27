@@ -5,6 +5,7 @@ import Browser.Events exposing (onAnimationFrameDelta, onResize)
 import Canvas
 import Components.GameCanvas as GameCanvas
 import Components.Player as Player
+import Components.Projectile as Projectile
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyParser, RawKey(..))
@@ -41,6 +42,7 @@ update msg model =
                         { player
                             | timeSinceFiring =
                                 player.timeSinceFiring + deltaTime / 1000
+                            , projectiles = List.map (Projectile.update deltaTime) player.projectiles
                         }
                   }
                 , Cmd.none
@@ -77,7 +79,19 @@ keyboardUpdate key model =
 
     else if List.member Spacebar pressedKeys then
         if not model.isPaused && player.timeSinceFiring > 1 then
-            { model | player = { player | timeSinceFiring = 0, isFiring = True } }
+            { model
+                | player =
+                    { player
+                        | timeSinceFiring = 0
+                        , projectiles =
+                            { position = Player.center model.player
+                            , direction = ( 1, 1 )
+                            , speed = 0.2
+                            , damage = 100
+                            }
+                                :: model.player.projectiles
+                    }
+            }
 
         else
             model

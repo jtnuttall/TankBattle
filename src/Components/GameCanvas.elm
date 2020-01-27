@@ -4,6 +4,7 @@ import Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (fill, stroke)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
+import Components.Player as Player
 import Components.Projectile exposing (Projectile)
 import Model exposing (Model)
 import Utility exposing (mapTuple, mapTupleUniform, uncurry)
@@ -20,7 +21,7 @@ canvas model =
             else
                 identity
            )
-        |> renderProjectiles model.projectiles
+        |> renderProjectiles model.player.projectiles
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -50,19 +51,13 @@ tank model renderable =
 
         ( sizex, sizey ) =
             player.size
-
-        ( x, y ) =
-            player.position
-
-        center =
-            ( x + sizex / 2, y + sizey / 2 )
     in
     renderable
         ++ [ shapes
                 [ fill Color.red
                 , transform <|
                     List.concat
-                        [ rotateAround center (degrees player.rotation)
+                        [ rotateAround (Player.center player) (degrees player.rotation)
                         ]
                 ]
                 [ rect model.player.position
@@ -94,5 +89,11 @@ pauseOverlay model renderable =
 
 
 renderProjectiles : List Projectile -> List Renderable -> List Renderable
-renderProjectiles projectile renderable =
-    renderable
+renderProjectiles projectiles renderable =
+    (shapes [ fill Color.blue ] <| List.map projectileShapes projectiles)
+        :: renderable
+
+
+projectileShapes : Projectile -> Canvas.Shape
+projectileShapes projectile =
+    circle projectile.position 2

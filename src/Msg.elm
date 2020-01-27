@@ -1,6 +1,6 @@
 module Msg exposing (Msg(..))
 
-import Keyboard
+import Lib.Keyboard as Keyboard
 
 
 type Msg

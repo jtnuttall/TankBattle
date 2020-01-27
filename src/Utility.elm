@@ -11,3 +11,8 @@ mapTuple f1 f2 =
 mapTupleUniform : (a -> b) -> ( a, a ) -> ( b, b )
 mapTupleUniform f =
     mapTuple f f
+
+
+uncurry : (a -> b -> c) -> ( a, b ) -> c
+uncurry f ( a, b ) =
+    f a b

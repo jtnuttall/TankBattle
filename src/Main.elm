@@ -7,14 +7,45 @@ import Components.GameCanvas as GameCanvas
 import Components.Player as Player
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
-import Keyboard exposing (Key(..))
-import Keyboard.Arrows exposing (wasd)
+import Lib.Keyboard as Keyboard exposing (Key(..), KeyParser, RawKey(..))
+import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
 import Utility exposing (mapTuple)
 
 
+gameKeys : KeyParser
+gameKeys (RawKey key) =
+    case String.toUpper key of
+        "W" ->
+            Just <| Character "W"
 
+        "A" ->
+            Just <| Character "A"
+
+        "S" ->
+            Just <| Character "S"
+
+        "D" ->
+            Just <| Character "D"
+
+        "E" ->
+            Just <| Character "E"
+
+        "Q" ->
+            Just <| Character "Q"
+
+        "Escape" ->
+            Just <| Escape
+
+        _ ->
+            Nothing
+
+
+
+--parser : KeyParser
+--parser (RawKey _) =
+--    arrowKey
 ---- UPDATE ----
 
 
@@ -45,28 +76,42 @@ update msg model =
 
         KeyPress key ->
             let
-                pressedKeys =
-                    Keyboard.update key model.pressedKeys
+                ( pressedKeys, keyChange ) =
+                    Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
 
                 { x, y } =
                     wasd pressedKeys
 
                 player =
                     model.player
+
+                transform =
+                    model.player.transform
+
+                rotate =
+                    if List.member (Character "Q") pressedKeys then
+                        -1.0
+
+                    else if List.member (Character "E") pressedKeys then
+                        1.0
+
+                    else
+                        0
             in
             ( { model
-                | pressedKeys = pressedKeys
-                , player =
+                | player =
                     if model.isPaused then
                         player
 
                     else
                         { player
-                            | position =
+                            | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * degrees rotate)
+                            , position =
                                 mapTuple
-                                    ((+) << (*) model.deltaTime << (*) model.speed <| toFloat x)
-                                    ((+) << (*) model.deltaTime << (*) model.speed << negate <| toFloat y)
+                                    ((+) << (*) model.deltaTime << (*) model.player.moveSpeed <| toFloat x)
+                                    ((+) << (*) model.deltaTime << (*) model.player.moveSpeed << negate <| toFloat y)
                                     player.position
+                            , pressedKeys = pressedKeys
                         }
               }
             , Cmd.none
@@ -111,6 +156,9 @@ subscriptions model =
           else
             onAnimationFrameDelta Frame
         , onResize Resize
+
+        --, Sub.map KeyDown Keyboard.downs
+        --, Sub.map KeyUp Keyboard.ups
         , Sub.map KeyPress Keyboard.subscriptions
         ]
 

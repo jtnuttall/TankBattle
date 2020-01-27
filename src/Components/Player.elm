@@ -14,6 +14,8 @@ type alias Player =
     , moveSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
+    , timeSinceFiring : Float
+    , isFiring : Bool
     }
 
 
@@ -25,8 +27,10 @@ init position playerId playerName =
       , rotation = 0
       , size = ( 25, 40 )
       , moveSpeed = 200
-      , rotateSpeed = 100
+      , rotateSpeed = 200
       , pressedKeys = []
+      , timeSinceFiring = 0
+      , isFiring = False
       }
     , Cmd.none
     )

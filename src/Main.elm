@@ -16,7 +16,7 @@ import Utility exposing (cycleF, mapTuple)
 
 gameKeys : KeyParser
 gameKeys =
-    Keyboard.oneOf [ arrowKey, Keyboard.uiKey ]
+    Keyboard.oneOf [ arrowKey, Keyboard.uiKey, Keyboard.whitespaceKey ]
 
 
 
@@ -27,13 +27,21 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Frame deltaTime ->
+            let
+                player =
+                    model.player
+            in
             if model.isPaused then
                 ( model, Cmd.none )
 
             else
                 ( { model
-                    | count = model.count + 1
-                    , deltaTime = deltaTime / 1000
+                    | deltaTime = deltaTime / 1000
+                    , player =
+                        { player
+                            | timeSinceFiring =
+                                player.timeSinceFiring + deltaTime / 1000
+                        }
                   }
                 , Cmd.none
                 )
@@ -60,9 +68,19 @@ keyboardUpdate key model =
     let
         ( pressedKeys, keyChange ) =
             Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
+
+        player =
+            model.player
     in
     if List.member Escape pressedKeys then
         { model | isPaused = not model.isPaused }
+
+    else if List.member Spacebar pressedKeys then
+        if not model.isPaused && player.timeSinceFiring > 1 then
+            { model | player = { player | timeSinceFiring = 0, isFiring = True } }
+
+        else
+            model
 
     else
         let
@@ -74,9 +92,6 @@ keyboardUpdate key model =
 
             move =
                 toFloat y
-
-            player =
-                model.player
 
             xprime =
                 move * sin (degrees player.rotation)

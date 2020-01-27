@@ -4,6 +4,7 @@ import Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (fill, stroke)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
+import Components.Projectile exposing (Projectile)
 import Model exposing (Model)
 import Utility exposing (mapTuple, mapTupleUniform, uncurry)
 
@@ -19,6 +20,7 @@ canvas model =
             else
                 identity
            )
+        |> renderProjectiles model.projectiles
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -89,3 +91,8 @@ pauseOverlay model renderable =
                     sizey
                 ]
            ]
+
+
+renderProjectiles : List Projectile -> List Renderable -> List Renderable
+renderProjectiles projectile renderable =
+    renderable

@@ -1,6 +1,7 @@
 module Model exposing (Flags, Model, init)
 
 import Components.Player as Player exposing (Player, init)
+import Components.Projectile as Projectile exposing (Projectile)
 import Msg exposing (Msg(..))
 import Utility exposing (mapTupleUniform)
 
@@ -12,6 +13,7 @@ type alias Model =
     , windowDims : ( Float, Float )
     , gameDims : ( Float, Float )
     , player : Player
+    , projectiles : List Projectile
     }
 
 
@@ -25,7 +27,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         gameDims =
-            ( 640, 480 )
+            ( flags.windowWidth, flags.windowHeight )
 
         ( player1, player1Cmd ) =
             Player.init (mapTupleUniform (\x -> x / 2) gameDims) 1 "__player1__"
@@ -36,6 +38,7 @@ init flags =
       , windowDims = ( flags.windowWidth, flags.windowHeight )
       , gameDims = gameDims
       , player = player1
+      , projectiles = []
       }
     , Cmd.batch [ player1Cmd ]
     )

@@ -14,7 +14,6 @@ type alias Player =
     , moveSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
-    , transform : { rotate : Float, translate : ( Float, Float ) }
     }
 
 
@@ -28,7 +27,6 @@ init position playerId playerName =
       , moveSpeed = 200
       , rotateSpeed = 100
       , pressedKeys = []
-      , transform = { rotate = 0, translate = ( 0, 0 ) }
       }
     , Cmd.none
     )

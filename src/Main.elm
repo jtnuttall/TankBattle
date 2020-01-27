@@ -88,9 +88,6 @@ update msg model =
                 player =
                     model.player
 
-                transform =
-                    model.player.transform
-
                 xprime =
                     move * sin (degrees player.rotation)
 
@@ -107,8 +104,8 @@ update msg model =
                             | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
                             , position =
                                 mapTuple
-                                    (xprime |> (*) player.moveSpeed |> (*) model.deltaTime |> (+))
-                                    (yprime |> (*) player.moveSpeed |> (*) model.deltaTime |> negate |> (+))
+                                    (xprime * player.moveSpeed * model.deltaTime |> (+))
+                                    (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
                                     player.position
                             , pressedKeys = pressedKeys
                         }

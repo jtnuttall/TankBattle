@@ -5,14 +5,20 @@ import Canvas.Settings exposing (fill, stroke)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
 import Model exposing (Model)
-import Utility exposing (mapTupleUniform, uncurry)
+import Utility exposing (mapTuple, mapTupleUniform, uncurry)
 
 
 canvas : Model -> List Renderable
 canvas model =
     []
         |> screen model.gameDims Color.black
-        |> renderTank model
+        |> tank model
+        |> (if model.isPaused then
+                pauseOverlay model
+
+            else
+                identity
+           )
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -34,8 +40,8 @@ rotateAround ( centerx, centery ) degrees =
     ]
 
 
-renderTank : Model -> List Renderable -> List Renderable
-renderTank model renderable =
+tank : Model -> List Renderable -> List Renderable
+tank model renderable =
     let
         player =
             model.player
@@ -58,6 +64,27 @@ renderTank model renderable =
                         ]
                 ]
                 [ rect model.player.position
+                    sizex
+                    sizey
+                ]
+           ]
+
+
+pauseOverlay : Model -> List Renderable -> List Renderable
+pauseOverlay model renderable =
+    let
+        sizex =
+            10
+
+        sizey =
+            100
+    in
+    renderable
+        ++ [ shapes [ fill Color.white ]
+                [ rect (mapTuple (\x -> x / 2 - 2 * sizex) (\y -> y / 2 - sizey) model.gameDims)
+                    sizex
+                    sizey
+                , rect (mapTuple (\x -> x / 2 + 2 * sizex) (\y -> y / 2 - sizey) model.gameDims)
                     sizex
                     sizey
                 ]

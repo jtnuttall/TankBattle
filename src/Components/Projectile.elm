@@ -6,7 +6,6 @@ import Utility exposing (mapTupleUniform)
 type alias Projectile =
     { position : ( Float, Float )
     , direction : ( Float, Float )
-    , angle : Float
     , speed : Float
     , damage : Float
     }

@@ -11,8 +11,10 @@ type alias Player =
     , playerName : String
     , position : ( Float, Float )
     , rotation : Float
+    , direction : ( Float, Float )
     , size : ( Float, Float )
     , moveSpeed : Float
+    , currentSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
     , timeSinceFiring : Float
@@ -27,8 +29,10 @@ init position playerId playerName =
       , playerName = playerName
       , position = position
       , rotation = 0
+      , direction = ( 0, 1 )
       , size = ( 25, 40 )
       , moveSpeed = 200
+      , currentSpeed = 0
       , rotateSpeed = 200
       , pressedKeys = []
       , timeSinceFiring = 0

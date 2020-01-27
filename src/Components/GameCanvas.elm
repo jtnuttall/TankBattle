@@ -51,6 +51,17 @@ tank model renderable =
 
         ( sizex, sizey ) =
             player.size
+
+        gunSizex =
+            sizex / 4
+
+        gunSizey =
+            sizey / 2
+
+        gunPos =
+            player.position
+                |> Tuple.mapFirst (\x -> x + (sizex - gunSizex) / 2)
+                |> Tuple.mapSecond (\y -> y - sizey / 4)
     in
     renderable
         ++ [ shapes
@@ -63,6 +74,17 @@ tank model renderable =
                 [ rect model.player.position
                     sizex
                     sizey
+                ]
+           , shapes
+                [ fill Color.green
+                , transform <|
+                    List.concat
+                        [ rotateAround (Player.center player) (degrees player.rotation)
+                        ]
+                ]
+                [ rect gunPos
+                    gunSizex
+                    gunSizey
                 ]
            ]
 

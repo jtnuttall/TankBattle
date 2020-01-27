@@ -45,7 +45,7 @@ update msg model =
                             , projectiles =
                                 player.projectiles
                                     |> purge model.gameDims
-                                    |> List.map (Projectile.update deltaTime << Debug.log "Projectile")
+                                    |> List.map (Projectile.update deltaTime)
                         }
                   }
                 , Cmd.none
@@ -86,11 +86,17 @@ keyboardUpdate key model =
         move =
             toFloat y
 
+        dirx =
+            sin (degrees player.rotation)
+
+        diry =
+            cos (degrees player.rotation)
+
         xprime =
-            move * sin (degrees player.rotation)
+            move * dirx
 
         yprime =
-            move * cos (degrees player.rotation)
+            move * diry
     in
     { model
         | isPaused =
@@ -114,8 +120,7 @@ keyboardUpdate key model =
                     , projectiles =
                         if List.member Spacebar pressedKeys && player.timeSinceFiring > 0.25 then
                             { position = Player.center model.player
-                            , direction = ( sin (degrees player.rotation), cos (degrees player.rotation) )
-                            , angle = player.rotation
+                            , direction = ( dirx, diry )
                             , speed = 0.09
                             , damage = 100
                             }
@@ -128,6 +133,15 @@ keyboardUpdate key model =
                         player.position
                             |> Tuple.mapFirst (xprime * player.moveSpeed * model.deltaTime |> (+))
                             |> Tuple.mapSecond (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
+                    , currentSpeed =
+                        if List.member (Character "W") pressedKeys || List.member (Character "w") pressedKeys then
+                            player.moveSpeed
+
+                        else if List.member (Character "S") pressedKeys || List.member (Character "s") pressedKeys then
+                            -player.moveSpeed
+
+                        else
+                            0
                     , pressedKeys = pressedKeys
                 }
     }
@@ -167,13 +181,13 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ if model.isPaused then
+        [ Sub.map KeyPress Keyboard.subscriptions
+        , if model.isPaused then
             Sub.none
 
           else
             onAnimationFrameDelta Frame
         , onResize Resize
-        , Sub.map KeyPress Keyboard.subscriptions
         ]
 
 

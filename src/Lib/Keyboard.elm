@@ -7,6 +7,7 @@ module Lib.Keyboard exposing
     , downs, ups
     , rawValue, eventKeyDecoder
     , Key(..)
+    , uiKey
     )
 
 {-| Convenience helpers for working with keyboard inputs.

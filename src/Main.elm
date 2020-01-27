@@ -15,31 +15,8 @@ import Utility exposing (cycleF, mapTuple)
 
 
 gameKeys : KeyParser
-gameKeys (RawKey key) =
-    case String.toUpper key of
-        "W" ->
-            Just <| Character "W"
-
-        "A" ->
-            Just <| Character "A"
-
-        "S" ->
-            Just <| Character "S"
-
-        "D" ->
-            Just <| Character "D"
-
-        "E" ->
-            Just <| Character "E"
-
-        "Q" ->
-            Just <| Character "Q"
-
-        "Escape" ->
-            Just <| Escape
-
-        _ ->
-            Nothing
+gameKeys =
+    Keyboard.oneOf [ arrowKey, Keyboard.uiKey ]
 
 
 
@@ -72,49 +49,57 @@ update msg model =
             )
 
         KeyPress key ->
-            let
-                ( pressedKeys, keyChange ) =
-                    Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
-
-                { x, y } =
-                    wasd pressedKeys
-
-                rotate =
-                    toFloat x
-
-                move =
-                    toFloat y
-
-                player =
-                    model.player
-
-                xprime =
-                    move * sin (degrees player.rotation)
-
-                yprime =
-                    move * cos (degrees player.rotation)
-            in
-            ( { model
-                | player =
-                    if model.isPaused then
-                        player
-
-                    else
-                        { player
-                            | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
-                            , position =
-                                mapTuple
-                                    (xprime * player.moveSpeed * model.deltaTime |> (+))
-                                    (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
-                                    player.position
-                            , pressedKeys = pressedKeys
-                        }
-              }
-            , Cmd.none
-            )
+            ( keyboardUpdate key model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
+
+
+keyboardUpdate : Keyboard.Msg -> Model -> Model
+keyboardUpdate key model =
+    let
+        ( pressedKeys, keyChange ) =
+            Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
+    in
+    if List.member Escape pressedKeys then
+        { model | isPaused = not model.isPaused }
+
+    else
+        let
+            { x, y } =
+                wasd pressedKeys
+
+            rotate =
+                toFloat x
+
+            move =
+                toFloat y
+
+            player =
+                model.player
+
+            xprime =
+                move * sin (degrees player.rotation)
+
+            yprime =
+                move * cos (degrees player.rotation)
+        in
+        { model
+            | player =
+                if model.isPaused then
+                    player
+
+                else
+                    { player
+                        | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
+                        , position =
+                            mapTuple
+                                (xprime * player.moveSpeed * model.deltaTime |> (+))
+                                (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
+                                player.position
+                        , pressedKeys = pressedKeys
+                    }
+        }
 
 
 
@@ -152,9 +137,6 @@ subscriptions model =
           else
             onAnimationFrameDelta Frame
         , onResize Resize
-
-        --, Sub.map KeyDown Keyboard.downs
-        --, Sub.map KeyUp Keyboard.ups
         , Sub.map KeyPress Keyboard.subscriptions
         ]
 

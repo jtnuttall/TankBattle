@@ -90,9 +90,4 @@ pauseOverlay model renderable =
 
 renderProjectiles : List Projectile -> List Renderable -> List Renderable
 renderProjectiles projectiles renderable =
-    renderable ++ [ shapes [ fill Color.blue ] <| List.map projectileShapes projectiles ]
-
-
-projectileShapes : Projectile -> Canvas.Shape
-projectileShapes projectile =
-    circle projectile.position 2
+    renderable ++ [ shapes [ fill Color.blue ] <| List.map (\p -> circle p.position 5) projectiles ]

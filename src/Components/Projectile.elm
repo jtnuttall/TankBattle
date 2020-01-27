@@ -6,6 +6,7 @@ import Utility exposing (mapTupleUniform)
 type alias Projectile =
     { position : ( Float, Float )
     , direction : ( Float, Float )
+    , angle : Float
     , speed : Float
     , damage : Float
     }
@@ -17,10 +18,13 @@ update deltaTime projectile =
         ( oldx, oldy ) =
             projectile.position
 
+        ( dirx, diry ) =
+            projectile.direction
+
         newx =
-            oldx + projectile.speed * deltaTime
+            oldx + -dirx * projectile.speed * deltaTime
 
         newy =
-            oldy + projectile.speed * deltaTime
+            oldy + diry * projectile.speed * deltaTime
     in
     { projectile | position = ( newx, newy ) }

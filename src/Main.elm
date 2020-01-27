@@ -45,7 +45,7 @@ update msg model =
                             , projectiles =
                                 player.projectiles
                                     |> purge model.gameDims
-                                    |> List.map (Projectile.update deltaTime)
+                                    |> List.map (Projectile.update deltaTime << Debug.log "Projectile")
                         }
                   }
                 , Cmd.none
@@ -106,16 +106,17 @@ keyboardUpdate key model =
             else
                 { player
                     | timeSinceFiring =
-                        if List.member Spacebar pressedKeys then
+                        if List.member Spacebar pressedKeys && player.timeSinceFiring > 0.25 then
                             0
 
                         else
                             player.timeSinceFiring
                     , projectiles =
-                        if List.member Spacebar pressedKeys then
+                        if List.member Spacebar pressedKeys && player.timeSinceFiring > 0.25 then
                             { position = Player.center model.player
-                            , direction = ( 1, 1 )
-                            , speed = 0.02
+                            , direction = ( sin (degrees player.rotation), cos (degrees player.rotation) )
+                            , angle = player.rotation
+                            , speed = 0.09
                             , damage = 100
                             }
                                 :: player.projectiles
@@ -136,7 +137,7 @@ purge : ( Float, Float ) -> List Projectile -> List Projectile
 purge ( maxx, maxy ) =
     let
         beyondEdge ( x, y ) =
-            x < 0 || y < 0 || x > maxx || x > maxy
+            x < 0 || y < 0 || x > maxx || y > maxy
     in
     List.filter (not << beyondEdge << .position)
 

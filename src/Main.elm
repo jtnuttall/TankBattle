@@ -73,65 +73,73 @@ keyboardUpdate key model =
 
         player =
             model.player
-    in
-    if List.member Escape pressedKeys then
-        { model | isPaused = not model.isPaused }
 
-    else if List.member Spacebar pressedKeys then
-        if not model.isPaused && player.timeSinceFiring > 1 then
-            { model
-                | player =
-                    { player
-                        | timeSinceFiring = 0
-                        , projectiles =
+        { x, y } =
+            wasd pressedKeys
+
+        rotate =
+            toFloat x
+
+        move =
+            toFloat y
+
+        xprime =
+            move * sin (degrees player.rotation)
+
+        yprime =
+            move * cos (degrees player.rotation)
+    in
+    { model
+        | isPaused =
+            if List.member Escape pressedKeys then
+                not model.isPaused
+
+            else
+                model.isPaused
+        , player =
+            if model.isPaused then
+                { player | pressedKeys = pressedKeys }
+
+            else
+                { player
+                    | timeSinceFiring =
+                        if List.member Spacebar pressedKeys then
+                            0
+
+                        else
+                            player.timeSinceFiring
+                    , projectiles =
+                        if List.member Spacebar pressedKeys then
                             { position = Player.center model.player
                             , direction = ( 1, 1 )
                             , speed = 0.2
                             , damage = 100
                             }
-                                :: model.player.projectiles
-                    }
-            }
+                                :: player.projectiles
 
-        else
-            model
-
-    else
-        let
-            { x, y } =
-                wasd pressedKeys
-
-            rotate =
-                toFloat x
-
-            move =
-                toFloat y
-
-            xprime =
-                move * sin (degrees player.rotation)
-
-            yprime =
-                move * cos (degrees player.rotation)
-        in
-        { model
-            | player =
-                if model.isPaused then
-                    player
-
-                else
-                    { player
-                        | rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
-                        , position =
-                            mapTuple
-                                (xprime * player.moveSpeed * model.deltaTime |> (+))
-                                (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
-                                player.position
-                        , pressedKeys = pressedKeys
-                    }
-        }
+                        else
+                            player.projectiles
+                    , rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
+                    , position =
+                        mapTuple
+                            (xprime * player.moveSpeed * model.deltaTime |> (+))
+                            (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
+                            player.position
+                    , pressedKeys = pressedKeys
+                }
+    }
 
 
 
+--if List.member Escape pressedKeys then
+--    { model | isPaused = not model.isPaused }
+--else if List.member Spacebar pressedKeys then
+--    if not model.isPaused && player.timeSinceFiring > 1 then
+--    else
+--        model
+--else
+--    let
+--    in
 ---- VIEW ----
 
 

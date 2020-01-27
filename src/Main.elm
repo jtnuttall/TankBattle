@@ -5,7 +5,7 @@ import Browser.Events exposing (onAnimationFrameDelta, onResize)
 import Canvas
 import Components.GameCanvas as GameCanvas
 import Components.Player as Player
-import Components.Projectile as Projectile
+import Components.Projectile as Projectile exposing (Projectile)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyParser, RawKey(..))
@@ -42,7 +42,10 @@ update msg model =
                         { player
                             | timeSinceFiring =
                                 player.timeSinceFiring + deltaTime / 1000
-                            , projectiles = List.map (Projectile.update deltaTime) player.projectiles
+                            , projectiles =
+                                player.projectiles
+                                    |> purge model.gameDims
+                                    |> List.map (Projectile.update deltaTime)
                         }
                   }
                 , Cmd.none
@@ -112,7 +115,7 @@ keyboardUpdate key model =
                         if List.member Spacebar pressedKeys then
                             { position = Player.center model.player
                             , direction = ( 1, 1 )
-                            , speed = 0.2
+                            , speed = 0.02
                             , damage = 100
                             }
                                 :: player.projectiles
@@ -121,26 +124,21 @@ keyboardUpdate key model =
                             player.projectiles
                     , rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
                     , position =
-                        mapTuple
-                            (xprime * player.moveSpeed * model.deltaTime |> (+))
-                            (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
-                            player.position
+                        player.position
+                            |> Tuple.mapFirst (xprime * player.moveSpeed * model.deltaTime |> (+))
+                            |> Tuple.mapSecond (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
                     , pressedKeys = pressedKeys
                 }
     }
 
 
-
---if List.member Escape pressedKeys then
---    { model | isPaused = not model.isPaused }
---else if List.member Spacebar pressedKeys then
---    if not model.isPaused && player.timeSinceFiring > 1 then
---    else
---        model
---else
---    let
---    in
----- VIEW ----
+purge : ( Float, Float ) -> List Projectile -> List Projectile
+purge ( maxx, maxy ) =
+    let
+        beyondEdge ( x, y ) =
+            x < 0 || y < 0 || x > maxx || x > maxy
+    in
+    List.filter (not << beyondEdge << .position)
 
 
 view : Model -> Browser.Document Msg

@@ -18,9 +18,9 @@ update deltaTime projectile =
             projectile.position
 
         newx =
-            oldx * projectile.speed * deltaTime
+            oldx + projectile.speed * deltaTime
 
         newy =
-            oldy * projectile.speed * deltaTime
+            oldy + projectile.speed * deltaTime
     in
     { projectile | position = ( newx, newy ) }

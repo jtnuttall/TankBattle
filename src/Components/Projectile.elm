@@ -22,9 +22,9 @@ update deltaTime projectile =
             projectile.direction
 
         newx =
-            oldx + -dirx * projectile.speed * deltaTime
+            oldx + dirx * projectile.speed * deltaTime
 
         newy =
-            oldy + diry * projectile.speed * deltaTime
+            oldy + -diry * projectile.speed * deltaTime
     in
     { projectile | position = ( newx, newy ) }

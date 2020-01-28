@@ -1,5 +1,6 @@
 module Components.Player exposing (..)
 
+import Components.Collider as Collider exposing (Collider)
 import Components.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard exposing (Key(..), KeyChange(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
@@ -12,9 +13,7 @@ type alias Player =
     , playerName : String
     , position : ( Float, Float )
     , rotation : Float
-    , direction : ( Float, Float )
     , size : ( Float, Float )
-    , isMoving : Bool
     , moveSpeed : Float
     , currentSpeed : Float
     , rotateSpeed : Float
@@ -23,26 +22,44 @@ type alias Player =
     , firingInterval : Float
     , isFiring : Bool
     , projectiles : List Projectile
+    , collider : Collider
     }
 
 
 init : ( Float, Float ) -> Int -> String -> ( Player, Cmd Msg )
 init position playerId playerName =
+    let
+        width =
+            25
+
+        height =
+            40
+
+        aabb =
+            { position =
+                { x = Tuple.first position
+                , y = Tuple.second position
+                }
+            , dimensions =
+                { width = width
+                , height = height
+                }
+            }
+    in
     ( { playerId = playerId
       , playerName = playerName
       , position = position
       , rotation = 0
-      , direction = ( 0, 1 )
-      , size = ( 25, 40 )
-      , isMoving = False
-      , moveSpeed = 200
+      , size = ( width, height )
+      , moveSpeed = 75
       , currentSpeed = 0
-      , rotateSpeed = 200
+      , rotateSpeed = 75
       , pressedKeys = []
       , timeSinceFiring = 0
       , firingInterval = 0.25
       , isFiring = False
       , projectiles = []
+      , collider = { aabb = aabb }
       }
     , Cmd.none
     )

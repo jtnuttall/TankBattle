@@ -135,22 +135,6 @@ playerMoveUpdate key model =
 
                         else
                             0
-                    , isMoving =
-                        case keyChange of
-                            Just (KeyUp upKey) ->
-                                isMovingKeyUp pressedKeys upKey
-
-                            Just (KeyDown downKey) ->
-                                True
-
-                            Nothing ->
-                                x /= 0 || y /= 0
-
-                    --, direction =
-                    --    if x /= 0 || y /= 0 then
-                    --        ( dirx, diry )
-                    --    else
-                    --        player.direction
                     , pressedKeys = pressedKeys
                 }
     }

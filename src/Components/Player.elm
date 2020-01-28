@@ -14,8 +14,9 @@ type alias Player =
     , position : ( Float, Float )
     , rotation : Float
     , size : ( Float, Float )
+    , gunDims : ( Float, Float )
+    , gunCenter : ( Float, Float )
     , moveSpeed : Float
-    , currentSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
     , timeSinceFiring : Float
@@ -51,18 +52,24 @@ init position playerId playerName =
       , position = position
       , rotation = 0
       , size = ( width, height )
-      , moveSpeed = 75
-      , currentSpeed = 0
-      , rotateSpeed = 75
+      , gunDims = ( width / 4, height / 2 )
+      , gunCenter = gunCenter width height position
+      , moveSpeed = 100
+      , rotateSpeed = 100
       , pressedKeys = []
       , timeSinceFiring = 0
-      , firingInterval = 0.25
+      , firingInterval = 0.5
       , isFiring = False
       , projectiles = []
       , collider = { aabb = aabb }
       }
     , Cmd.none
     )
+
+
+forward : Player -> ( Float, Float )
+forward player =
+    ( sin (degrees player.rotation), cos (degrees player.rotation) )
 
 
 center : Player -> ( Float, Float )
@@ -75,6 +82,18 @@ center player =
             player.position
     in
     ( x + sizex / 2, y + sizey / 2 )
+
+
+gunCenter : Float -> Float -> ( Float, Float ) -> ( Float, Float )
+gunCenter width height parentPosition =
+    parentPosition
+        |> Tuple.mapFirst (\x -> x + (3 * width) / 8)
+        |> Tuple.mapSecond (\y -> y - height / 4)
+
+
+endOfGun : Player -> ( Float, Float )
+endOfGun player =
+    center player
 
 
 translate : Float -> Player -> Player

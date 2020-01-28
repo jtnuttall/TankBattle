@@ -52,11 +52,8 @@ tank model renderable =
         ( sizex, sizey ) =
             player.size
 
-        gunSizex =
-            sizex / 4
-
-        gunSizey =
-            sizey / 2
+        ( gunSizex, gunSizey ) =
+            ( sizex / 4, sizey / 2 )
 
         gunPos =
             player.position
@@ -118,9 +115,7 @@ pauseOverlay model renderable =
            ]
         ++ [ shapes
                 [ fill Color.grey ]
-                [--Canvas.path
-                 --[ Canvas.arcTo ]
-                ]
+                []
            ]
 
 

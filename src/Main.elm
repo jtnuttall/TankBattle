@@ -4,7 +4,7 @@ import Browser
 import Browser.Events exposing (onAnimationFrameDelta, onResize)
 import Canvas
 import Components.GameCanvas as GameCanvas
-import Components.Player as Player
+import Components.Player as Player exposing (Player)
 import Components.Projectile as Projectile exposing (Projectile)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
@@ -12,7 +12,7 @@ import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, Raw
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
-import Utility exposing (cycleF, flip)
+import Utility exposing (cycleF, flip, uncurry)
 
 
 gameKeys : KeyParser
@@ -35,6 +35,10 @@ moveKeys =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    --let
+    --    --test =
+    --    --    Debug.log "pressedKeys" model.player.pressedKeys
+    --in
     case msg of
         Frame deltaTime ->
             let
@@ -50,11 +54,18 @@ update msg model =
                     , player =
                         { player
                             | timeSinceFiring =
-                                player.timeSinceFiring + deltaTime / 1000
+                                if List.member Spacebar player.pressedKeys && player.timeSinceFiring > player.firingInterval then
+                                    0
+
+                                else
+                                    player.timeSinceFiring + deltaTime / 1000
                             , projectiles =
                                 player.projectiles
                                     |> cull model.gameDims
                                     |> List.map (Projectile.update deltaTime)
+                                    |> newProjectile player
+
+                            --, gunCenter = uncurry Player.gunCenter player.gunDims player.position
                         }
                             |> Player.translate (deltaTime / 1000)
                   }
@@ -78,6 +89,20 @@ update msg model =
             ( model, Cmd.none )
 
 
+newProjectile : Player -> List Projectile -> List Projectile
+newProjectile player projectiles =
+    if List.member Spacebar player.pressedKeys && player.timeSinceFiring > player.firingInterval then
+        { position = Debug.log "endofgun" (Player.endOfGun player)
+        , direction = Player.forward player
+        , speed = 0.55
+        , damage = 100
+        }
+            :: projectiles
+
+    else
+        projectiles
+
+
 playerMoveUpdate : Keyboard.Msg -> Model -> Model
 playerMoveUpdate key model =
     let
@@ -90,11 +115,8 @@ playerMoveUpdate key model =
         { x, y } =
             wasd pressedKeys
 
-        dirx =
-            sin (degrees player.rotation)
-
-        diry =
-            cos (degrees player.rotation)
+        ( dirx, diry ) =
+            Player.forward player
     in
     { model
         | isPaused =
@@ -103,40 +125,7 @@ playerMoveUpdate key model =
 
             else
                 model.isPaused
-        , player =
-            if model.isPaused then
-                { player | pressedKeys = pressedKeys }
-
-            else
-                { player
-                    | timeSinceFiring =
-                        if List.member Spacebar pressedKeys && player.timeSinceFiring > player.firingInterval then
-                            0
-
-                        else
-                            player.timeSinceFiring
-                    , projectiles =
-                        if List.member Spacebar pressedKeys && player.timeSinceFiring > player.firingInterval then
-                            { position = Player.center model.player
-                            , direction = ( dirx, diry )
-                            , speed = 0.09
-                            , damage = 100
-                            }
-                                :: player.projectiles
-
-                        else
-                            player.projectiles
-                    , currentSpeed =
-                        if x > 0 then
-                            player.moveSpeed
-
-                        else if x < 0 then
-                            -player.moveSpeed
-
-                        else
-                            0
-                    , pressedKeys = pressedKeys
-                }
+        , player = { player | pressedKeys = pressedKeys }
     }
 
 

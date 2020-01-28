@@ -34,7 +34,7 @@ update msg model =
 
         Resize width height ->
             ( { model
-                | windowDims =
+                | gameDims =
                     ( toFloat width
                     , toFloat height
                     )

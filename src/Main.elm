@@ -8,16 +8,25 @@ import Components.Player as Player
 import Components.Projectile as Projectile exposing (Projectile)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
-import Lib.Keyboard as Keyboard exposing (Key(..), KeyParser, RawKey(..))
+import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
-import Utility exposing (cycleF, mapTuple)
+import Utility exposing (cycleF, flip)
 
 
 gameKeys : KeyParser
 gameKeys =
     Keyboard.oneOf [ arrowKey, Keyboard.uiKey, Keyboard.whitespaceKey ]
+
+
+moveKeys : List Key
+moveKeys =
+    [ Character "w"
+    , Character "a"
+    , Character "s"
+    , Character "d"
+    ]
 
 
 
@@ -44,9 +53,10 @@ update msg model =
                                 player.timeSinceFiring + deltaTime / 1000
                             , projectiles =
                                 player.projectiles
-                                    |> purge model.gameDims
+                                    |> cull model.gameDims
                                     |> List.map (Projectile.update deltaTime)
                         }
+                            |> Player.translate (deltaTime / 1000)
                   }
                 , Cmd.none
                 )
@@ -62,14 +72,14 @@ update msg model =
             )
 
         KeyPress key ->
-            ( keyboardUpdate key model, Cmd.none )
+            ( playerMoveUpdate key model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
 
 
-keyboardUpdate : Keyboard.Msg -> Model -> Model
-keyboardUpdate key model =
+playerMoveUpdate : Keyboard.Msg -> Model -> Model
+playerMoveUpdate key model =
     let
         ( pressedKeys, keyChange ) =
             Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
@@ -80,23 +90,11 @@ keyboardUpdate key model =
         { x, y } =
             wasd pressedKeys
 
-        rotate =
-            toFloat x
-
-        move =
-            toFloat y
-
         dirx =
             sin (degrees player.rotation)
 
         diry =
             cos (degrees player.rotation)
-
-        xprime =
-            move * dirx
-
-        yprime =
-            move * diry
     in
     { model
         | isPaused =
@@ -112,13 +110,13 @@ keyboardUpdate key model =
             else
                 { player
                     | timeSinceFiring =
-                        if List.member Spacebar pressedKeys && player.timeSinceFiring > 0.25 then
+                        if List.member Spacebar pressedKeys && player.timeSinceFiring > player.firingInterval then
                             0
 
                         else
                             player.timeSinceFiring
                     , projectiles =
-                        if List.member Spacebar pressedKeys && player.timeSinceFiring > 0.25 then
+                        if List.member Spacebar pressedKeys && player.timeSinceFiring > player.firingInterval then
                             { position = Player.center model.player
                             , direction = ( dirx, diry )
                             , speed = 0.09
@@ -128,27 +126,59 @@ keyboardUpdate key model =
 
                         else
                             player.projectiles
-                    , rotation = player.rotation + (model.deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
-                    , position =
-                        player.position
-                            |> Tuple.mapFirst (xprime * player.moveSpeed * model.deltaTime |> (+))
-                            |> Tuple.mapSecond (yprime * player.moveSpeed * model.deltaTime |> negate |> (+))
                     , currentSpeed =
-                        if List.member (Character "W") pressedKeys || List.member (Character "w") pressedKeys then
+                        if x > 0 then
                             player.moveSpeed
 
-                        else if List.member (Character "S") pressedKeys || List.member (Character "s") pressedKeys then
+                        else if x < 0 then
                             -player.moveSpeed
 
                         else
                             0
+                    , isMoving =
+                        case keyChange of
+                            Just (KeyUp upKey) ->
+                                isMovingKeyUp pressedKeys upKey
+
+                            Just (KeyDown downKey) ->
+                                True
+
+                            Nothing ->
+                                x /= 0 || y /= 0
+
+                    --, direction =
+                    --    if x /= 0 || y /= 0 then
+                    --        ( dirx, diry )
+                    --    else
+                    --        player.direction
                     , pressedKeys = pressedKeys
                 }
     }
 
 
-purge : ( Float, Float ) -> List Projectile -> List Projectile
-purge ( maxx, maxy ) =
+isMovingKeyUp : List Key -> Key -> Bool
+isMovingKeyUp pressedKeys upKey =
+    let
+        upKeyPrime =
+            Keyboard.map String.toLower upKey
+
+        filteredKeys =
+            pressedKeys
+                |> List.map (Keyboard.map String.toLower)
+                |> List.filter
+                    (\pressedKey ->
+                        Keyboard.map String.toLower upKeyPrime
+                            /= pressedKey
+                    )
+
+        { x, y } =
+            wasd filteredKeys
+    in
+    x /= 0 || y /= 0
+
+
+cull : ( Float, Float ) -> List Projectile -> List Projectile
+cull ( maxx, maxy ) =
     let
         beyondEdge ( x, y ) =
             x < 0 || y < 0 || x > maxx || y > maxy

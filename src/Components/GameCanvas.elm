@@ -1,7 +1,7 @@
 module Components.GameCanvas exposing (canvas)
 
 import Canvas exposing (Renderable, circle, rect, shapes)
-import Canvas.Settings exposing (fill, stroke)
+import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
 import Components.Player as Player
@@ -92,20 +92,34 @@ tank model renderable =
 pauseOverlay : Model -> List Renderable -> List Renderable
 pauseOverlay model renderable =
     let
-        sizex =
-            10
-
-        sizey =
-            100
+        ( pauseBarSizex, pauseBarSizey ) =
+            ( 10, 100 )
     in
     renderable
-        ++ [ shapes [ fill Color.white ]
-                [ rect (mapTuple (\x -> x / 2 - 2 * sizex) (\y -> y / 2 - sizey) model.gameDims)
-                    sizex
-                    sizey
-                , rect (mapTuple (\x -> x / 2 + 2 * sizex) (\y -> y / 2 - sizey) model.gameDims)
-                    sizex
-                    sizey
+        ++ [ shapes
+                [ fill Color.white ]
+                [ rect
+                    (mapTuple
+                        (\x -> x / 2 - 2 * pauseBarSizex)
+                        (\y -> y / 2 - pauseBarSizey)
+                        model.gameDims
+                    )
+                    pauseBarSizex
+                    pauseBarSizey
+                , rect
+                    (mapTuple
+                        (\x -> x / 2 + 2 * pauseBarSizex)
+                        (\y -> y / 2 - pauseBarSizey)
+                        model.gameDims
+                    )
+                    pauseBarSizex
+                    pauseBarSizey
+                ]
+           ]
+        ++ [ shapes
+                [ fill Color.grey ]
+                [--Canvas.path
+                 --[ Canvas.arcTo ]
                 ]
            ]
 

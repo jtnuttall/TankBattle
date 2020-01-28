@@ -7,7 +7,7 @@ module Lib.Keyboard exposing
     , downs, ups
     , rawValue, eventKeyDecoder
     , Key(..)
-    , uiKey
+    , map, uiKey
     )
 
 {-| Convenience helpers for working with keyboard inputs.
@@ -348,6 +348,16 @@ type Key
     | MediaStop
     | MediaTrackNext
     | MediaTrackPrevious
+
+
+map : (String -> String) -> Key -> Key
+map f ch =
+    case ch of
+        Character c ->
+            Character (f c)
+
+        k ->
+            k
 
 
 {-| This parser tries to match with all the keys I can recognize. `Spacebar` is used for the space

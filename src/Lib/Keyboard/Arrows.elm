@@ -120,7 +120,8 @@ wasd keys =
     let
         toInt char =
             keys
-                |> List.member (Character char)
+                |> List.map (Keyboard.map String.toLower)
+                |> List.member (Character <| String.toLower char)
                 |> boolToInt
 
         x =

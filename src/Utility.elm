@@ -28,3 +28,8 @@ cycleF min max val =
 
     else
         val
+
+
+flip : (a -> b -> c) -> b -> a -> c
+flip f a b =
+    f b a

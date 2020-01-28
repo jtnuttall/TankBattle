@@ -27,3 +27,12 @@ update deltaTime projectile =
             oldy + -diry * projectile.speed * deltaTime
     in
     { projectile | position = ( newx, newy ) }
+
+
+cull : ( Float, Float ) -> List Projectile -> List Projectile
+cull ( maxx, maxy ) =
+    let
+        beyondEdge ( x, y ) =
+            x < 0 || y < 0 || x > maxx || y > maxy
+    in
+    List.filter (not << beyondEdge << .position)

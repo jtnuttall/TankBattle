@@ -1,4 +1,4 @@
-module Components.Collider exposing (..)
+module Components.Collider exposing (Collider(..))
 
 
 type alias AABB =
@@ -13,5 +13,13 @@ type alias AABB =
     }
 
 
-type alias Collider =
-    { aabb : AABB }
+type alias Circle =
+    { x : Float
+    , y : Float
+    , radius : Float
+    }
+
+
+type Collider
+    = AABBCollider AABB
+    | CircleCollider Circle

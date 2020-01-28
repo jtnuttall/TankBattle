@@ -1,6 +1,7 @@
 module Components.Player exposing (..)
 
-import Components.Collider as Collider exposing (Collider)
+import Components.Collider as Collider exposing (Collider(..))
+import Components.Gun as Gun exposing (Gun)
 import Components.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard exposing (Key(..), KeyChange(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
@@ -14,16 +15,12 @@ type alias Player =
     , position : ( Float, Float )
     , rotation : Float
     , size : ( Float, Float )
-    , gunDims : ( Float, Float )
-    , gunCenter : ( Float, Float )
     , moveSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
-    , timeSinceFiring : Float
-    , firingInterval : Float
-    , isFiring : Bool
     , projectiles : List Projectile
     , collider : Collider
+    , gun : Gun
     }
 
 
@@ -52,16 +49,12 @@ init position playerId playerName =
       , position = position
       , rotation = 0
       , size = ( width, height )
-      , gunDims = ( width / 4, height / 2 )
-      , gunCenter = gunCenter width height position
       , moveSpeed = 100
       , rotateSpeed = 100
       , pressedKeys = []
-      , timeSinceFiring = 0
-      , firingInterval = 0.5
-      , isFiring = False
       , projectiles = []
-      , collider = { aabb = aabb }
+      , collider = AABBCollider aabb
+      , gun = Gun.init ( width, height ) position
       }
     , Cmd.none
     )
@@ -82,13 +75,6 @@ center player =
             player.position
     in
     ( x + sizex / 2, y + sizey / 2 )
-
-
-gunCenter : Float -> Float -> ( Float, Float ) -> ( Float, Float )
-gunCenter width height parentPosition =
-    parentPosition
-        |> Tuple.mapFirst (\x -> x + (3 * width) / 8)
-        |> Tuple.mapSecond (\y -> y - height / 4)
 
 
 endOfGun : Player -> ( Float, Float )

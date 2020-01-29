@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Components.Gun as Gun
 import Components.Player as Player exposing (Player)
 import Components.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
@@ -11,15 +12,6 @@ import Msg exposing (Msg(..))
 gameKeys : KeyParser
 gameKeys =
     Keyboard.oneOf [ arrowKey, Keyboard.uiKey, Keyboard.whitespaceKey ]
-
-
-moveKeys : List Key
-moveKeys =
-    [ Character "w"
-    , Character "a"
-    , Character "s"
-    , Character "d"
-    ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -65,10 +57,11 @@ deltaTimeUpdate deltaTime model =
 
         newProjectile projectiles =
             if shouldFire then
-                { position = Player.endOfGun player
+                { position = Gun.end player.position player.size player.rotation player.gun
                 , direction = Player.forward player
-                , speed = 100
+                , speed = 200
                 , damage = 100
+                , shouldRotate = True
                 }
                     :: projectiles
 
@@ -93,8 +86,6 @@ deltaTimeUpdate deltaTime model =
                             else
                                 player.gun.timeSinceFiring + deltaTime
                     }
-
-                --, gunCenter = uncurry Player.gunCenter player.gunDims player.position
             }
                 |> Player.translate deltaTime
       }
@@ -105,17 +96,11 @@ deltaTimeUpdate deltaTime model =
 playerMoveUpdate : Keyboard.Msg -> Model -> Model
 playerMoveUpdate key model =
     let
-        ( pressedKeys, keyChange ) =
-            Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
+        pressedKeys =
+            Keyboard.updateWithParser gameKeys key model.player.pressedKeys
 
         player =
             model.player
-
-        { x, y } =
-            wasd pressedKeys
-
-        ( dirx, diry ) =
-            Player.forward player
     in
     { model
         | isPaused =
@@ -126,24 +111,3 @@ playerMoveUpdate key model =
                 model.isPaused
         , player = { player | pressedKeys = pressedKeys }
     }
-
-
-isMovingKeyUp : List Key -> Key -> Bool
-isMovingKeyUp pressedKeys upKey =
-    let
-        upKeyPrime =
-            Keyboard.map String.toLower upKey
-
-        filteredKeys =
-            pressedKeys
-                |> List.map (Keyboard.map String.toLower)
-                |> List.filter
-                    (\pressedKey ->
-                        Keyboard.map String.toLower upKeyPrime
-                            /= pressedKey
-                    )
-
-        { x, y } =
-            wasd filteredKeys
-    in
-    x /= 0 || y /= 0

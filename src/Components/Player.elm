@@ -77,9 +77,8 @@ center player =
     ( x + sizex / 2, y + sizey / 2 )
 
 
-endOfGun : Player -> ( Float, Float )
-endOfGun player =
-    center player
+
+--Gun.position player.position player.size player.gun
 
 
 translate : Float -> Player -> Player

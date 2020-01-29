@@ -4,7 +4,8 @@ import Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
-import Components.Player as Player
+import Components.Gun as Gun
+import Components.Player as Player exposing (Player)
 import Components.Projectile exposing (Projectile)
 import Model exposing (Model)
 import Utility exposing (mapTuple, mapTupleUniform, uncurry)
@@ -21,7 +22,7 @@ canvas model =
             else
                 identity
            )
-        |> renderProjectiles model.player.projectiles
+        |> renderProjectiles model.player
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -56,9 +57,7 @@ tank model renderable =
             ( sizex / 4, sizey / 2 )
 
         gunPos =
-            player.position
-                |> Tuple.mapFirst (\x -> x + (sizex - gunSizex) / 2)
-                |> Tuple.mapSecond (\y -> y - sizey / 4)
+            Gun.position player.position player.size player.gun
     in
     renderable
         ++ [ shapes
@@ -79,9 +78,7 @@ tank model renderable =
                         [ rotateAround (Player.center player) (degrees player.rotation)
                         ]
                 ]
-                [ rect gunPos
-                    gunSizex
-                    gunSizey
+                [ rect gunPos gunSizex gunSizey
                 ]
            ]
 
@@ -119,6 +116,16 @@ pauseOverlay model renderable =
            ]
 
 
-renderProjectiles : List Projectile -> List Renderable -> List Renderable
-renderProjectiles projectiles renderable =
-    renderable ++ [ shapes [ fill Color.blue ] <| List.map (\p -> circle p.position 5) projectiles ]
+renderProjectiles : Player -> List Renderable -> List Renderable
+renderProjectiles player renderable =
+    renderable
+        ++ [ player.projectiles
+                |> List.map (\p -> circle p.position 5)
+                |> shapes
+                    [ fill Color.blue
+                    , transform <|
+                        List.concat
+                            [--rotateAround (Player.center player) (degrees player.rotation)
+                            ]
+                    ]
+           ]

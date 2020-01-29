@@ -32,13 +32,11 @@ update msg model =
         KeyPress key ->
             ( playerMoveUpdate key model, Cmd.none )
 
-        TextureLoaded maybeTexture ->
-            case maybeTexture of
-                Just texture ->
-                    Debug.todo "Textures"
+        TextureLoaded Nothing ->
+            Debug.todo "Texture Nothing"
 
-                Nothing ->
-                    Debug.todo "Textures"
+        TextureLoaded (Just texture) ->
+            Debug.todo "Texture Just"
 
         _ ->
             ( model, Cmd.none )

@@ -87,7 +87,7 @@ deltaTimeUpdate deltaTime model =
                                 player.gun.timeSinceFiring + deltaTime
                     }
             }
-                |> Player.translate deltaTime
+                |> Player.transform deltaTime
       }
     , Cmd.none
     )

@@ -81,8 +81,8 @@ center player =
 --Gun.position player.position player.size player.gun
 
 
-translate : Float -> Player -> Player
-translate deltaTime player =
+transform : Float -> Player -> Player
+transform deltaTime player =
     let
         { x, y } =
             wasd player.pressedKeys

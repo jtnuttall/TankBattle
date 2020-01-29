@@ -30,6 +30,18 @@ cycleF min max val =
         val
 
 
+clampF : Float -> Float -> Float -> Float
+clampF min max val =
+    if val <= min then
+        min
+
+    else if val >= max then
+        max
+
+    else
+        val
+
+
 flip : (a -> b -> c) -> b -> a -> c
 flip f a b =
     f b a

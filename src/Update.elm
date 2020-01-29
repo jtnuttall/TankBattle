@@ -46,47 +46,13 @@ deltaTimeUpdate deltaTime model =
     let
         player =
             model.player
-
-        gun =
-            player.gun
-
-        shouldFire =
-            List.member Spacebar player.pressedKeys
-                && gun.timeSinceFiring
-                > gun.firingInterval
-
-        newProjectile projectiles =
-            if shouldFire then
-                { position = Gun.end player.position player.size player.rotation player.gun
-                , direction = Player.forward player
-                , speed = 200
-                , damage = 100
-                }
-                    :: projectiles
-
-            else
-                projectiles
     in
     ( { model
         | deltaTime = deltaTime
         , player =
-            { player
-                | projectiles =
-                    player.projectiles
-                        |> Projectile.cull model.gameDims
-                        |> List.map (Projectile.update deltaTime)
-                        |> newProjectile
-                , gun =
-                    { gun
-                        | timeSinceFiring =
-                            if shouldFire then
-                                0
-
-                            else
-                                player.gun.timeSinceFiring + deltaTime
-                    }
-            }
-                |> Player.transform deltaTime
+            player
+                |> Player.updateProjectiles deltaTime model.gameDims
+                |> Player.transform deltaTime model.gameDims
       }
     , Cmd.none
     )

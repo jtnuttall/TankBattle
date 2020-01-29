@@ -6,7 +6,7 @@ import Component.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard exposing (Key(..), KeyChange(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Msg exposing (Msg)
-import Utility exposing (cycleF, mapTuple)
+import Utility exposing (clampF, cycleF, uncurry)
 
 
 type alias Player =
@@ -77,8 +77,49 @@ center player =
     ( x + sizex / 2, y + sizey / 2 )
 
 
-transform : Float -> Player -> Player
-transform deltaTime player =
+updateProjectiles : Float -> ( Float, Float ) -> Player -> Player
+updateProjectiles deltaTime gameDims player =
+    let
+        gun =
+            player.gun
+
+        shouldFire =
+            List.member Spacebar player.pressedKeys
+                && gun.timeSinceFiring
+                > gun.firingInterval
+
+        newProjectile projectiles =
+            if shouldFire then
+                { position = Gun.end player.position player.size player.rotation player.gun
+                , direction = forward player
+                , speed = 500
+                , damage = 100
+                }
+                    :: projectiles
+
+            else
+                projectiles
+    in
+    { player
+        | projectiles =
+            player.projectiles
+                |> Projectile.cull gameDims
+                |> List.map (Projectile.update deltaTime)
+                |> newProjectile
+        , gun =
+            { gun
+                | timeSinceFiring =
+                    if shouldFire then
+                        0
+
+                    else
+                        player.gun.timeSinceFiring + deltaTime
+            }
+    }
+
+
+transform : Float -> ( Float, Float ) -> Player -> Player
+transform deltaTime ( gameWidth, gameHeight ) player =
     let
         { x, y } =
             wasd player.pressedKeys
@@ -107,4 +148,6 @@ transform deltaTime player =
             player.position
                 |> Tuple.mapFirst (xprime * player.moveSpeed * deltaTime |> (+))
                 |> Tuple.mapSecond (yprime * player.moveSpeed * deltaTime |> negate |> (+))
+                |> Tuple.mapFirst (clampF 0 gameWidth)
+                |> Tuple.mapSecond (clampF 0 gameHeight)
     }

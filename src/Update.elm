@@ -22,15 +22,10 @@ update msg model =
                 ( model, Cmd.none )
 
             else
-                deltaTimeUpdate (deltaTime / 1000) model
+                ( deltaTimeUpdate (deltaTime / 1000) model, Cmd.none )
 
         Resize width height ->
-            ( { model
-                | gameDims =
-                    ( toFloat width
-                    , toFloat height
-                    )
-              }
+            ( { model | gameDims = ( toFloat width, toFloat height ) }
             , Cmd.none
             )
 
@@ -49,21 +44,19 @@ update msg model =
             ( model, Cmd.none )
 
 
-deltaTimeUpdate : Float -> Model -> ( Model, Cmd Msg )
+deltaTimeUpdate : Float -> Model -> Model
 deltaTimeUpdate deltaTime model =
     let
         player =
             model.player
     in
-    ( { model
+    { model
         | deltaTime = deltaTime
         , player =
             player
                 |> Player.updateProjectiles deltaTime model.gameDims
                 |> Player.transform deltaTime model.gameDims
-      }
-    , Cmd.none
-    )
+    }
 
 
 playerMoveUpdate : Keyboard.Msg -> Model -> Model

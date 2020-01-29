@@ -127,8 +127,7 @@ renderProjectiles player renderable =
                     [ fill Color.blue
                     , transform <|
                         List.concat
-                            [--rotateAround (Player.center player) (radians player.rotation)
-                            ]
+                            []
                     ]
            ]
 

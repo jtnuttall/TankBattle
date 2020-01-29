@@ -3,12 +3,13 @@ module Component.GameCanvas exposing (canvas)
 import Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
+import Canvas.Settings.Text as Canvas
 import Color
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
 import Model exposing (Model)
-import Utility exposing (mapTuple, mapTupleUniform, uncurry)
+import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry)
 
 
 canvas : Model -> List Renderable
@@ -16,13 +17,14 @@ canvas model =
     []
         |> screen model.gameDims Color.black
         |> tank model
+        |> renderProjectiles model.player
         |> (if model.isPaused then
                 pauseOverlay model
 
             else
                 identity
            )
-        |> renderProjectiles model.player
+        |> renderHud model
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -128,4 +130,49 @@ renderProjectiles player renderable =
                             [--rotateAround (Player.center player) (radians player.rotation)
                             ]
                     ]
+           ]
+
+
+renderHud : Model -> List Renderable -> List Renderable
+renderHud model renderable =
+    let
+        ( width, height ) =
+            model.gameDims
+    in
+    renderable
+        ++ [ Canvas.text
+                [ Canvas.font
+                    { size = 14
+                    , family = "monospace"
+                    }
+                , fill Color.white
+                , Canvas.align Canvas.Left
+                ]
+                ( 30, 30 )
+                model.player.playerName
+           , Canvas.text
+                [ Canvas.font
+                    { size = 14
+                    , family = "monospace"
+                    }
+                , Canvas.align Canvas.Center
+                , fill Color.white
+                ]
+                ( width / 2, 30 )
+                (if model.isPaused then
+                    "PAUSED"
+
+                 else
+                    ""
+                )
+           , Canvas.text
+                [ Canvas.font
+                    { size = 14
+                    , family = "monospace"
+                    }
+                , Canvas.align Canvas.Right
+                , fill Color.white
+                ]
+                ( width - 30, 30 )
+                ("SCORE: " ++ prettyInt model.player.score)
            ]

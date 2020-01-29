@@ -45,3 +45,32 @@ clampF min max val =
 flip : (a -> b -> c) -> b -> a -> c
 flip f a b =
     f b a
+
+
+commasEveryThird : Int -> List Char -> List Char
+commasEveryThird n cs =
+    case cs of
+        [] ->
+            []
+
+        c :: rest ->
+            if n == 3 then
+                ',' :: c :: commasEveryThird 1 rest
+
+            else
+                c :: commasEveryThird (n + 1) rest
+
+
+
+-- Not a great way to do this, but the strings are short and the project is personal
+
+
+prettyInt : Int -> String
+prettyInt int =
+    int
+        |> String.fromInt
+        |> String.toList
+        |> List.reverse
+        |> commasEveryThird 0
+        |> List.reverse
+        |> String.fromList

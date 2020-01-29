@@ -12,6 +12,7 @@ import Utility exposing (clampF, cycleF, uncurry)
 type alias Player =
     { playerId : Int
     , playerName : String
+    , score : Int
     , position : ( Float, Float )
     , rotation : Float
     , size : ( Float, Float )
@@ -46,6 +47,7 @@ init position playerId playerName =
     in
     ( { playerId = playerId
       , playerName = playerName
+      , score = 0
       , position = position
       , rotation = 0
       , size = ( width, height )

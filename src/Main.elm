@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta, onResize)
 import Canvas
-import Components.GameCanvas as GameCanvas
+import Component.GameCanvas as GameCanvas
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
 import Lib.Keyboard as Keyboard

@@ -1,4 +1,4 @@
-module Components.Collider exposing (Collider(..))
+module Component.Collider exposing (Collider(..))
 
 
 type alias AABB =

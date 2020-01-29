@@ -1,4 +1,4 @@
-module Components.Projectile exposing (..)
+module Component.Projectile exposing (..)
 
 import Utility exposing (mapTupleUniform)
 

@@ -1,6 +1,6 @@
 module Model exposing (Flags, Model, init)
 
-import Components.Player as Player exposing (Player, init)
+import Component.Player as Player exposing (Player, init)
 import Msg exposing (Msg(..))
 import Utility exposing (mapTupleUniform)
 

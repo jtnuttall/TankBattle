@@ -1,8 +1,8 @@
 module Update exposing (update)
 
-import Components.Gun as Gun
-import Components.Player as Player exposing (Player)
-import Components.Projectile as Projectile exposing (Projectile)
+import Component.Gun as Gun
+import Component.Player as Player exposing (Player)
+import Component.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Model)

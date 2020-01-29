@@ -1,12 +1,12 @@
-module Components.GameCanvas exposing (canvas)
+module Component.GameCanvas exposing (canvas)
 
 import Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Color
-import Components.Gun as Gun
-import Components.Player as Player exposing (Player)
-import Components.Projectile exposing (Projectile)
+import Component.Gun as Gun
+import Component.Player as Player exposing (Player)
+import Component.Projectile exposing (Projectile)
 import Model exposing (Model)
 import Utility exposing (mapTuple, mapTupleUniform, uncurry)
 

@@ -1,4 +1,4 @@
-module Components.Gun exposing (..)
+module Component.Gun exposing (..)
 
 
 type alias Gun =

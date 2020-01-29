@@ -1,8 +1,8 @@
-module Components.Player exposing (..)
+module Component.Player exposing (..)
 
-import Components.Collider as Collider exposing (Collider(..))
-import Components.Gun as Gun exposing (Gun)
-import Components.Projectile as Projectile exposing (Projectile)
+import Component.Collider as Collider exposing (Collider(..))
+import Component.Gun as Gun exposing (Gun)
+import Component.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard exposing (Key(..), KeyChange(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Msg exposing (Msg)
@@ -75,10 +75,6 @@ center player =
             player.position
     in
     ( x + sizex / 2, y + sizey / 2 )
-
-
-
---Gun.position player.position player.size player.gun
 
 
 transform : Float -> Player -> Player

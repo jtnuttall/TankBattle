@@ -29,10 +29,10 @@ init : ( Float, Float ) -> Int -> String -> ( Player, Cmd Msg )
 init position playerId playerName =
     let
         width =
-            81
+            25
 
         height =
-            80
+            40
 
         aabb =
             { position =

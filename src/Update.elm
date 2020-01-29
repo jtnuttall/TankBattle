@@ -1,11 +1,13 @@
 module Update exposing (update)
 
+import Array
+import Canvas.Texture as Texture
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
-import Model exposing (Model)
+import Model exposing (Load(..), Model)
 import Msg exposing (Msg(..))
 
 
@@ -33,10 +35,30 @@ update msg model =
             ( playerMoveUpdate key model, Cmd.none )
 
         TextureLoaded Nothing ->
-            Debug.todo "Texture Nothing"
+            ( { model | sprites = Failure }, Cmd.none )
 
         TextureLoaded (Just texture) ->
-            Debug.todo "Texture Just"
+            ( { model
+                | sprites =
+                    let
+                        sprite x y t =
+                            Texture.sprite
+                                { x = x * (128 + 10)
+                                , y = y * (128 + 10)
+                                , width = 128
+                                , height = 128
+                                }
+                                t
+                    in
+                    Success
+                        { tank =
+                            { gun = Array.fromList [ sprite 1 0 texture ]
+                            , body = Array.fromList [ sprite 3 0 texture ]
+                            }
+                        }
+              }
+            , Cmd.none
+            )
 
         _ ->
             ( model, Cmd.none )

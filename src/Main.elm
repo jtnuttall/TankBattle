@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta, onResize)
 import Canvas
+import Canvas.Texture as Texture
 import Component.GameCanvas as GameCanvas
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (..)
@@ -10,6 +11,12 @@ import Lib.Keyboard as Keyboard
 import Model exposing (Flags, Model)
 import Msg exposing (Msg(..))
 import Update
+
+
+textures : List (Texture.Source Msg)
+textures =
+    [ Texture.loadFromImageUrl "./assets/sheet.png" TextureLoaded
+    ]
 
 
 view : Model -> Browser.Document Msg
@@ -21,8 +28,11 @@ view model =
     { title = "Tank Battle!"
     , body =
         [ div [ id "gameContainer" ]
-            [ Canvas.toHtml
-                ( floor width, floor height )
+            [ Canvas.toHtmlWith
+                { width = floor width
+                , height = floor height
+                , textures = textures
+                }
                 []
                 (GameCanvas.canvas model)
             ]

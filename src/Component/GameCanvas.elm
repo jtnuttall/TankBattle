@@ -1,30 +1,59 @@
 module Component.GameCanvas exposing (canvas)
 
-import Canvas exposing (Renderable, circle, rect, shapes)
+import Canvas as Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
 import Canvas.Settings.Text as Canvas
+import Canvas.Texture as Texture
 import Color
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
-import Model exposing (Model)
+import Model exposing (Load(..), Model)
 import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry)
 
 
 canvas : Model -> List Renderable
 canvas model =
-    []
-        |> screen model.gameDims Color.black
-        |> tank model
-        |> renderProjectiles model.player
-        |> (if model.isPaused then
-                pauseOverlay model
+    case model.sprites of
+        Loading ->
+            []
+                |> screen model.gameDims Color.white
+                |> renderText model "Loading..."
 
-            else
-                identity
-           )
-        |> renderHud model
+        Failure ->
+            []
+                |> screen model.gameDims Color.white
+                |> renderText model "Failure."
+
+        Success sheet ->
+            []
+                |> screen model.gameDims Color.black
+                |> renderTank model
+                |> renderProjectiles model.player
+                |> (if model.isPaused then
+                        pauseOverlay model
+
+                    else
+                        identity
+                   )
+                |> renderHud model
+
+
+renderText : Model -> String -> List Renderable -> List Renderable
+renderText model txt renderable =
+    let
+        ( w, h ) =
+            model.gameDims
+    in
+    renderable
+        ++ [ Canvas.text
+                [ Canvas.font { size = 48, family = "sans-serif" }
+                , Canvas.align Canvas.Center
+                ]
+                ( w / 2, h / 2 - 24 )
+                txt
+           ]
 
 
 screen : ( Float, Float ) -> Color.Color -> List Renderable -> List Renderable
@@ -46,8 +75,8 @@ rotateAround ( centerx, centery ) radians =
     ]
 
 
-tank : Model -> List Renderable -> List Renderable
-tank model renderable =
+renderTank : Model -> List Renderable -> List Renderable
+renderTank model renderable =
     let
         player =
             model.player

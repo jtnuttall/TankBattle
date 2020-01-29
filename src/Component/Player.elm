@@ -50,7 +50,7 @@ init position playerId playerName =
       , rotation = 0
       , size = ( width, height )
       , moveSpeed = 100
-      , rotateSpeed = 100
+      , rotateSpeed = 2
       , pressedKeys = []
       , projectiles = []
       , collider = AABBCollider aabb
@@ -62,7 +62,7 @@ init position playerId playerName =
 
 forward : Player -> ( Float, Float )
 forward player =
-    ( sin (degrees player.rotation), cos (degrees player.rotation) )
+    ( sin player.rotation, cos player.rotation )
 
 
 center : Player -> ( Float, Float )
@@ -90,10 +90,10 @@ transform deltaTime player =
             toFloat y
 
         dirx =
-            sin (degrees player.rotation)
+            sin player.rotation
 
         diry =
-            cos (degrees player.rotation)
+            cos player.rotation
 
         xprime =
             move * dirx
@@ -102,7 +102,7 @@ transform deltaTime player =
             move * diry
     in
     { player
-        | rotation = player.rotation + (deltaTime * player.rotateSpeed * rotate) |> cycleF 0 360
+        | rotation = player.rotation + (deltaTime * player.rotateSpeed * rotate) |> cycleF 0 (2 * pi)
         , position =
             player.position
                 |> Tuple.mapFirst (xprime * player.moveSpeed * deltaTime |> (+))

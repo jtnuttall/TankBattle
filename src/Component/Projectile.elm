@@ -8,7 +8,6 @@ type alias Projectile =
     , direction : ( Float, Float )
     , speed : Float
     , damage : Float
-    , shouldRotate : Bool
     }
 
 
@@ -27,7 +26,7 @@ update deltaTime projectile =
         newy =
             oldy + -diry * projectile.speed * deltaTime
     in
-    { projectile | position = ( newx, newy ), shouldRotate = False }
+    { projectile | position = ( newx, newy ) }
 
 
 cull : ( Float, Float ) -> List Projectile -> List Projectile

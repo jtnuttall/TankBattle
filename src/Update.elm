@@ -61,7 +61,6 @@ deltaTimeUpdate deltaTime model =
                 , direction = Player.forward player
                 , speed = 200
                 , damage = 100
-                , shouldRotate = True
                 }
                     :: projectiles
 

@@ -37,9 +37,9 @@ screen ( width, height ) color renderable =
 
 
 rotateAround : ( Float, Float ) -> Float -> List Canvas.Transform
-rotateAround ( centerx, centery ) degrees =
+rotateAround ( centerx, centery ) radians =
     [ translate centerx centery
-    , rotate degrees
+    , rotate radians
     , translate -centerx -centery
     ]
 
@@ -64,7 +64,7 @@ tank model renderable =
                 [ fill Color.red
                 , transform <|
                     List.concat
-                        [ rotateAround (Player.center player) (degrees player.rotation)
+                        [ rotateAround (Player.center player) (radians player.rotation)
                         ]
                 ]
                 [ rect model.player.position
@@ -75,7 +75,7 @@ tank model renderable =
                 [ fill Color.green
                 , transform <|
                     List.concat
-                        [ rotateAround (Player.center player) (degrees player.rotation)
+                        [ rotateAround (Player.center player) (radians player.rotation)
                         ]
                 ]
                 [ rect gunPos gunSizex gunSizey
@@ -125,7 +125,7 @@ renderProjectiles player renderable =
                     [ fill Color.blue
                     , transform <|
                         List.concat
-                            [--rotateAround (Player.center player) (degrees player.rotation)
+                            [--rotateAround (Player.center player) (radians player.rotation)
                             ]
                     ]
            ]

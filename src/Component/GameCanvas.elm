@@ -9,7 +9,7 @@ import Color
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
-import Model exposing (Load(..), Model)
+import Model exposing (Load(..), Model, Sprites)
 import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry)
 
 
@@ -26,10 +26,10 @@ canvas model =
                 |> screen model.gameDims Color.white
                 |> renderText model "Failure."
 
-        Success sheet ->
+        Success sprites ->
             []
                 |> screen model.gameDims Color.black
-                |> renderTank model
+                |> renderTank model sprites
                 |> renderProjectiles model.player
                 |> (if model.isPaused then
                         pauseOverlay model
@@ -75,8 +75,8 @@ rotateAround ( centerx, centery ) radians =
     ]
 
 
-renderTank : Model -> List Renderable -> List Renderable
-renderTank model renderable =
+renderTank : Model -> Sprites -> List Renderable -> List Renderable
+renderTank model sprites renderable =
     let
         player =
             model.player

@@ -1,13 +1,13 @@
 module Update exposing (update)
 
 import Array
-import Canvas.Texture as Texture
+import Canvas.Texture as Texture exposing (Texture)
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile as Projectile exposing (Projectile)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
-import Model exposing (Load(..), Model)
+import Model exposing (Load(..), Model, Sprites)
 import Msg exposing (Msg(..))
 
 
@@ -37,26 +37,8 @@ update msg model =
         TextureLoaded Nothing ->
             ( { model | sprites = Failure }, Cmd.none )
 
-        TextureLoaded (Just texture) ->
-            ( { model
-                | sprites =
-                    let
-                        sprite x y t =
-                            Texture.sprite
-                                { x = x * (128 + 10)
-                                , y = y * (128 + 10)
-                                , width = 128
-                                , height = 128
-                                }
-                                t
-                    in
-                    Success
-                        { tank =
-                            { gun = Array.fromList [ sprite 1 0 texture ]
-                            , body = Array.fromList [ sprite 3 0 texture ]
-                            }
-                        }
-              }
+        TextureLoaded (Just sheet) ->
+            ( { model | sprites = Success <| spritesUpdate sheet }
             , Cmd.none
             )
 
@@ -96,4 +78,27 @@ playerMoveUpdate key model =
             else
                 model.isPaused
         , player = { player | pressedKeys = pressedKeys }
+    }
+
+
+spritesUpdate : Texture -> Sprites
+spritesUpdate sheet =
+    let
+        sprite x y =
+            Texture.sprite
+                { x = x * (128 + 10)
+                , y = y * (128 + 10)
+                , width = 128
+                , height = 128
+                }
+                sheet
+    in
+    { tank =
+        { gun =
+            List.range 3 11
+                |> List.map toFloat
+                |> List.map (\x -> sprite x 0)
+                |> Array.fromList
+        , body = Array.fromList [ sprite 1 0, sprite 2 0 ]
+        }
     }

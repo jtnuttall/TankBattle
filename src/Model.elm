@@ -1,4 +1,4 @@
-module Model exposing (Flags, Load(..), Model, init)
+module Model exposing (Flags, Load(..), Model, Sprites, init)
 
 import Array exposing (Array)
 import Canvas.Texture exposing (Texture)

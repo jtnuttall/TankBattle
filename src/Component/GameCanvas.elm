@@ -1,5 +1,6 @@
 module Component.GameCanvas exposing (canvas)
 
+import Array
 import Canvas as Canvas exposing (Renderable, circle, rect, shapes)
 import Canvas.Settings exposing (..)
 import Canvas.Settings.Advanced as Canvas exposing (rotate, scale, transform, translate)
@@ -10,7 +11,7 @@ import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
 import Model exposing (Load(..), Model, Sprites)
-import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry)
+import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry, veryUglyUnsafeGet)
 
 
 canvas : Model -> List Renderable
@@ -84,33 +85,29 @@ renderTank model sprites renderable =
         ( sizex, sizey ) =
             player.size
 
-        ( gunSizex, gunSizey ) =
-            ( sizex / 4, sizey / 2 )
+        body =
+            veryUglyUnsafeGet 0 sprites.tank.body
 
-        gunPos =
-            Gun.position player.position player.size player.gun
+        gun =
+            veryUglyUnsafeGet 0 sprites.tank.gun
     in
     renderable
-        ++ [ shapes
-                [ fill Color.red
-                , transform <|
+        ++ [ Canvas.texture
+                [ transform <|
                     List.concat
                         [ rotateAround (Player.center player) (radians player.rotation)
                         ]
                 ]
-                [ rect model.player.position
-                    sizex
-                    sizey
-                ]
-           , shapes
-                [ fill Color.green
-                , transform <|
+                player.position
+                body
+           , Canvas.texture
+                [ transform <|
                     List.concat
                         [ rotateAround (Player.center player) (radians player.rotation)
                         ]
                 ]
-                [ rect gunPos gunSizex gunSizey
-                ]
+                player.position
+                gun
            ]
 
 

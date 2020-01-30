@@ -25,14 +25,18 @@ type alias Player =
     }
 
 
+
+-- TODO: Use texture width and height, not hardcoded 128
+
+
 init : ( Float, Float ) -> Int -> String -> ( Player, Cmd Msg )
 init position playerId playerName =
     let
         width =
-            25
+            128
 
         height =
-            40
+            128
 
         aabb =
             { position =
@@ -77,6 +81,10 @@ center player =
             player.position
     in
     ( x + sizex / 2, y + sizey / 2 )
+
+
+
+-- position = Gun.end player.position apparentDims player.rotation player.gun
 
 
 updateProjectiles : Float -> ( Float, Float ) -> Player -> Player

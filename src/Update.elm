@@ -86,8 +86,8 @@ spritesUpdate sheet =
     let
         sprite x y =
             Texture.sprite
-                { x = x * (128 + 10)
-                , y = y * (128 + 10)
+                { x = x * 128
+                , y = y * 128
                 , width = 128
                 , height = 128
                 }
@@ -99,6 +99,10 @@ spritesUpdate sheet =
                 |> List.map toFloat
                 |> List.map (\x -> sprite x 0)
                 |> Array.fromList
-        , body = Array.fromList [ sprite 1 0, sprite 2 0 ]
+        , body =
+            List.range 1 2
+                |> List.map toFloat
+                |> List.map (\x -> sprite x 0)
+                |> Array.fromList
         }
     }

@@ -1,4 +1,4 @@
-module Drawing.Sprites exposing (Load(..), Sprites, init, update)
+module Drawing.Sprites exposing (Load(..), Sprites, init, running, update)
 
 import Array
 import Canvas.Texture as Texture exposing (Texture)
@@ -49,6 +49,8 @@ init sheet =
     { tank =
         { gun =
             { frameIndex = 0
+            , running = False
+            , done = False
             , time = 0
             , step = Constants.gunAnimationStep
             , zeroFrame = sprite gunStart 0 sheet
@@ -56,6 +58,8 @@ init sheet =
             }
         , body =
             { frameIndex = 0
+            , running = True
+            , done = False
             , time = 0
             , step = Constants.bodyAnimationStep
             , zeroFrame = sprite bodyStart 0 sheet
@@ -78,6 +82,26 @@ update deltaTime loadSprites =
                     { tank
                         | gun = AnimationData.update deltaTime tank.gun
                         , body = AnimationData.update deltaTime tank.body
+                    }
+            }
+                |> Success
+
+        _ ->
+            loadSprites
+
+
+running : Bool -> Load Sprites -> Load Sprites
+running isRunning loadSprites =
+    case loadSprites of
+        Success sprites ->
+            let
+                tank =
+                    sprites.tank
+            in
+            { sprites
+                | tank =
+                    { tank
+                        | gun = AnimationData.running isRunning tank.gun
                     }
             }
                 |> Success

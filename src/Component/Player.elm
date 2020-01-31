@@ -83,19 +83,21 @@ center player =
     ( x + sizex / 2, y + sizey / 2 )
 
 
+shouldFire : Player -> Bool
+shouldFire player =
+    List.member Spacebar player.pressedKeys
+        && player.gun.timeSinceFiring
+        > player.gun.firingInterval
+
+
 updateProjectiles : Float -> ( Float, Float ) -> Player -> Player
 updateProjectiles deltaTime gameDims player =
     let
         gun =
             player.gun
 
-        shouldFire =
-            List.member Spacebar player.pressedKeys
-                && gun.timeSinceFiring
-                > gun.firingInterval
-
         newProjectile projectiles =
-            if shouldFire then
+            if shouldFire player then
                 { position = Gun.end player.position player.dimensions player.rotation player.gun
                 , direction = forward player
                 , speed = 500
@@ -115,7 +117,7 @@ updateProjectiles deltaTime gameDims player =
         , gun =
             { gun
                 | timeSinceFiring =
-                    if shouldFire then
+                    if shouldFire player then
                         0
 
                     else

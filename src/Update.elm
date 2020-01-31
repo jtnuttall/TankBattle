@@ -74,6 +74,9 @@ playerKeyboardUpdate key model =
 
         player =
             model.player
+
+        animationData =
+            model.sprites
     in
     { model
         | isPaused =
@@ -83,4 +86,5 @@ playerKeyboardUpdate key model =
             else
                 model.isPaused
         , player = { player | pressedKeys = pressedKeys }
+        , sprites = Sprites.running (List.member Keyboard.Spacebar pressedKeys) model.sprites
     }

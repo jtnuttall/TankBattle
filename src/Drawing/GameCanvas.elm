@@ -1,4 +1,4 @@
-module Component.GameCanvas exposing (canvas)
+module Drawing.GameCanvas exposing (canvas)
 
 import Array
 import Canvas as Canvas exposing (Renderable, circle, rect, shapes)
@@ -11,7 +11,7 @@ import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
 import Model exposing (Load(..), Model, Sprites)
-import Utility exposing (mapTuple, mapTupleUniform, prettyInt, uncurry, veryUglyUnsafeGet)
+import Utility exposing (mapTuple, prettyInt, uncurry, veryUglyUnsafeGet)
 
 
 canvas : Model -> List Renderable
@@ -114,28 +114,23 @@ renderTank model sprites renderable =
 pauseOverlay : Model -> List Renderable -> List Renderable
 pauseOverlay model renderable =
     let
-        ( pauseBarSizex, pauseBarSizey ) =
+        ( pauseBarWidth, pauseBarHeight ) =
             ( 10, 100 )
+
+        rightPauseBarPosition =
+            model.gameDims
+                |> Tuple.mapFirst (\x -> x / 2 - 2 * pauseBarWidth)
+                |> Tuple.mapSecond (\y -> y / 2 - pauseBarHeight)
+
+        leftPauseBarPosition =
+            rightPauseBarPosition
+                |> Tuple.mapFirst (\x -> x + 4 * pauseBarWidth)
     in
     renderable
         ++ [ shapes
                 [ fill Color.white ]
-                [ rect
-                    (mapTuple
-                        (\x -> x / 2 - 2 * pauseBarSizex)
-                        (\y -> y / 2 - pauseBarSizey)
-                        model.gameDims
-                    )
-                    pauseBarSizex
-                    pauseBarSizey
-                , rect
-                    (mapTuple
-                        (\x -> x / 2 + 2 * pauseBarSizex)
-                        (\y -> y / 2 - pauseBarSizey)
-                        model.gameDims
-                    )
-                    pauseBarSizex
-                    pauseBarSizey
+                [ rect rightPauseBarPosition pauseBarWidth pauseBarHeight
+                , rect leftPauseBarPosition pauseBarWidth pauseBarHeight
                 ]
            ]
         ++ [ shapes

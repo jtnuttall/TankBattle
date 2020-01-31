@@ -119,8 +119,8 @@ pauseOverlay model renderable =
 
         rightPauseBarPosition =
             model.gameDims
-                |> Tuple.mapFirst (\x -> x / 2 - 2 * pauseBarWidth)
-                |> Tuple.mapSecond (\y -> y / 2 - pauseBarHeight)
+                |> Tuple.mapFirst (\x -> x / 2 - 2.5 * pauseBarWidth)
+                |> Tuple.mapSecond (\y -> y / 2 - 0.5 * pauseBarHeight)
 
         leftPauseBarPosition =
             rightPauseBarPosition

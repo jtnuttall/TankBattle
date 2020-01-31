@@ -11,24 +11,25 @@ import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
 import Drawing.AnimationData exposing (getFrame)
-import Model exposing (Load(..), Model, Sprites)
+import Drawing.Sprites as Sprites exposing (Sprites)
+import Model exposing (Model)
 import Utility exposing (prettyInt, uncurry)
 
 
 canvas : Model -> List Renderable
 canvas model =
     case model.sprites of
-        Loading ->
+        Sprites.Loading ->
             []
                 |> screen model.gameDims Color.white
                 |> renderText model "Loading..."
 
-        Failure ->
+        Sprites.Failure ->
             []
                 |> screen model.gameDims Color.white
                 |> renderText model "Failure."
 
-        Success sprites ->
+        Sprites.Success sprites ->
             []
                 |> screen model.gameDims Color.black
                 |> renderTank model sprites

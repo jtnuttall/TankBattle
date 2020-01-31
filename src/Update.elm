@@ -6,9 +6,10 @@ import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile as Projectile exposing (Projectile)
 import Constants
+import Drawing.Sprites as Sprites exposing (Sprites)
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
-import Model exposing (Load(..), Model, Sprites)
+import Model exposing (Model)
 import Msg exposing (Msg(..))
 
 
@@ -36,12 +37,12 @@ update msg model =
             )
 
         TextureLoaded Nothing ->
-            ( { model | sprites = Failure }
+            ( { model | sprites = Sprites.Failure }
             , Cmd.none
             )
 
         TextureLoaded (Just sheet) ->
-            ( { model | sprites = Success <| spritesInit sheet }
+            ( { model | sprites = Sprites.Success <| Sprites.init sheet }
             , Cmd.none
             )
 
@@ -57,6 +58,7 @@ deltaTimeUpdate deltaTime model =
     in
     { model
         | deltaTime = deltaTime
+        , sprites = Sprites.update deltaTime model.sprites
         , player =
             player
                 |> Player.updateProjectiles deltaTime model.gameDims
@@ -81,49 +83,4 @@ playerKeyboardUpdate key model =
             else
                 model.isPaused
         , player = { player | pressedKeys = pressedKeys }
-    }
-
-
-sprite : Float -> Float -> Texture -> Texture
-sprite x y sheet =
-    Texture.sprite
-        { x = x * 128
-        , y = y * 128
-        , width = 128
-        , height = 128
-        }
-        sheet
-
-
-spritesInit : Texture -> Sprites
-spritesInit sheet =
-    let
-        ( gunStart, gunEnd ) =
-            ( 3, 11 )
-
-        ( bodyStart, bodyEnd ) =
-            ( 1, 2 )
-
-        animationFrames start end =
-            List.range start end
-                |> List.map toFloat
-                |> List.map (\x -> sprite x 0 sheet)
-                |> Array.fromList
-    in
-    { tank =
-        { gun =
-            { frameIndex = 0
-            , time = 0
-            , step = Constants.gunAnimationStep
-            , zeroFrame = sprite gunStart 0 sheet
-            , frames = animationFrames gunStart gunEnd
-            }
-        , body =
-            { frameIndex = 0
-            , time = 0
-            , step = Constants.bodyAnimationStep
-            , zeroFrame = sprite bodyStart 0 sheet
-            , frames = animationFrames bodyStart bodyEnd
-            }
-        }
     }

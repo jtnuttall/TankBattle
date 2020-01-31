@@ -1,9 +1,10 @@
-module Model exposing (Flags, Load(..), Model, Sprites, init)
+module Model exposing (Flags, Model, init)
 
 import Array exposing (Array)
 import Canvas.Texture exposing (Texture)
 import Component.Player as Player exposing (Player, init)
 import Drawing.AnimationData exposing (AnimationData)
+import Drawing.Sprites as Sprites exposing (Sprites)
 import Msg exposing (Msg(..))
 
 
@@ -13,22 +14,8 @@ type alias Model =
     , isPaused : Bool
     , windowDims : ( Float, Float )
     , gameDims : ( Float, Float )
-    , sprites : Load Sprites
+    , sprites : Sprites.Load Sprites
     , player : Player
-    }
-
-
-type Load a
-    = Loading
-    | Failure
-    | Success a
-
-
-type alias Sprites =
-    { tank :
-        { body : AnimationData
-        , gun : AnimationData
-        }
     }
 
 
@@ -59,7 +46,7 @@ init flags =
       , isPaused = False
       , windowDims = ( flags.windowWidth, flags.windowHeight )
       , gameDims = gameDims
-      , sprites = Loading
+      , sprites = Sprites.Loading
       , player = player1
       }
     , Cmd.batch [ player1Cmd ]

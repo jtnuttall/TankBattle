@@ -16,17 +16,6 @@ init ( playerWidth, playerHeight ) playerPosition =
     }
 
 
-
--- TODO: Use texture size and not hardcoded 128
---position : ( Float, Float ) -> ( Float, Float ) -> Gun -> ( Float, Float )
---position playerPosition ( playerSizex, playerSizey ) { dimensions } =
---    playerPosition
---        |> Tuple.mapFirst (\x -> (x + (playerSizex - 128) / 2))
---        |> Tuple.mapSecond (\y -> y - (playerSizey - 128) / 2)
--- Formerly, gun extended beyond tank. the following function can calculate the end of that
--- rectangle
-
-
 end : ( Float, Float ) -> ( Float, Float ) -> Float -> Gun -> ( Float, Float )
 end playerPosition ( playerSizex, playerSizey ) rotation { dimensions } =
     playerPosition

@@ -20,7 +20,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Frame deltaTime ->
-            ( deltaTimeUpdate (deltaTime / 1000) model, Cmd.none )
+            ( deltaTimeUpdate (deltaTime / 1000) model
+            , Cmd.none
+            )
 
         Resize width height ->
             ( { model | gameDims = ( toFloat width, toFloat height ) }
@@ -28,10 +30,14 @@ update msg model =
             )
 
         KeyPress key ->
-            ( playerKeyboardUpdate key model, Cmd.none )
+            ( playerKeyboardUpdate key model
+            , Cmd.none
+            )
 
         TextureLoaded Nothing ->
-            ( { model | sprites = Failure }, Cmd.none )
+            ( { model | sprites = Failure }
+            , Cmd.none
+            )
 
         TextureLoaded (Just sheet) ->
             ( { model | sprites = Success <| spritesUpdate sheet }

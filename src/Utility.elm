@@ -3,27 +3,6 @@ module Utility exposing (..)
 import Array as Array exposing (Array)
 
 
-
--- I hate that I had to do this, but to build for production, you can't have
--- Debug.crash here. The only way to forcibly obtain a Just from a Maybe
--- is infinite recursion or a default. The issue is that I can't use Debug.crash
--- in a production build, but I also can't just emit an error. My indices should be
--- cyclical. The other obvious solution is a cyclical list, but this runs into
--- similar issues
---veryUglyUnsafeGet : Int -> Array a -> a
---veryUglyUnsafeGet i arr =
---    case Array.get i arr of
---        Just val ->
---            val
---        Nothing ->
---            veryUglyUnsafeGet i arr
-
-
-mapTuple : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
-mapTuple f1 f2 =
-    Tuple.mapFirst f1 << Tuple.mapSecond f2
-
-
 uncurry : (a -> b -> c) -> ( a, b ) -> c
 uncurry f ( a, b ) =
     f a b

@@ -149,7 +149,10 @@ transform deltaTime ( gameWidth, gameHeight ) player =
             move * diry
     in
     { player
-        | rotation = player.rotation + (deltaTime * player.rotateSpeed * rotate) |> cycleF 0 (2 * pi)
+        | rotation =
+            player.rotation
+                + (deltaTime * player.rotateSpeed * rotate)
+                |> cycleF 0 (2 * pi)
         , position =
             player.position
                 |> Tuple.mapFirst (xprime * player.moveSpeed * deltaTime |> (+))

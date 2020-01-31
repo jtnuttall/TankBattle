@@ -8,6 +8,22 @@ uncurry f ( a, b ) =
     f a b
 
 
+
+-- if only we had typeclasses... :(
+
+
+cycleI : Int -> Int -> Int -> Int
+cycleI min max val =
+    if val <= min then
+        max
+
+    else if val >= max then
+        min
+
+    else
+        val
+
+
 cycleF : Float -> Float -> Float -> Float
 cycleF min max val =
     if val <= min then

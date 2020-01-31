@@ -5,6 +5,7 @@ import Canvas.Texture as Texture exposing (Texture)
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile as Projectile exposing (Projectile)
+import Constants
 import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
 import Model exposing (Load(..), Model, Sprites)
@@ -40,7 +41,7 @@ update msg model =
             )
 
         TextureLoaded (Just sheet) ->
-            ( { model | sprites = Success <| spritesUpdate sheet }
+            ( { model | sprites = Success <| spritesInit sheet }
             , Cmd.none
             )
 
@@ -94,8 +95,8 @@ sprite x y sheet =
         sheet
 
 
-spritesUpdate : Texture -> Sprites
-spritesUpdate sheet =
+spritesInit : Texture -> Sprites
+spritesInit sheet =
     let
         ( gunStart, gunEnd ) =
             ( 3, 11 )
@@ -112,11 +113,15 @@ spritesUpdate sheet =
     { tank =
         { gun =
             { frameIndex = 0
+            , time = 0
+            , step = Constants.gunAnimationStep
             , zeroFrame = sprite gunStart 0 sheet
             , frames = animationFrames gunStart gunEnd
             }
         , body =
             { frameIndex = 0
+            , time = 0
+            , step = Constants.bodyAnimationStep
             , zeroFrame = sprite bodyStart 0 sheet
             , frames = animationFrames bodyStart bodyEnd
             }

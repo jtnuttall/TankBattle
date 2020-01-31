@@ -15,7 +15,7 @@ type alias Player =
     , score : Int
     , position : ( Float, Float )
     , rotation : Float
-    , size : ( Float, Float )
+    , dimensions : ( Float, Float )
     , moveSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
@@ -30,7 +30,7 @@ type alias Player =
 
 
 init : ( Float, Float ) -> Int -> String -> ( Player, Cmd Msg )
-init position playerId playerName =
+init ( x, y ) playerId playerName =
     let
         width =
             128
@@ -40,8 +40,8 @@ init position playerId playerName =
 
         aabb =
             { position =
-                { x = Tuple.first position
-                , y = Tuple.second position
+                { x = x
+                , y = y
                 }
             , dimensions =
                 { width = width
@@ -52,15 +52,15 @@ init position playerId playerName =
     ( { playerId = playerId
       , playerName = playerName
       , score = 0
-      , position = position
+      , position = ( x, y )
       , rotation = 0
-      , size = ( width, height )
+      , dimensions = ( width, height )
       , moveSpeed = 100
       , rotateSpeed = 2
       , pressedKeys = []
       , projectiles = []
       , collider = AABBCollider aabb
-      , gun = Gun.init ( width, height ) position
+      , gun = Gun.init ( width, height ) ( x, y )
       }
     , Cmd.none
     )
@@ -75,7 +75,7 @@ center : Player -> ( Float, Float )
 center player =
     let
         ( sizex, sizey ) =
-            player.size
+            player.dimensions
 
         ( x, y ) =
             player.position
@@ -100,7 +100,7 @@ updateProjectiles deltaTime gameDims player =
 
         newProjectile projectiles =
             if shouldFire then
-                { position = Gun.end player.position player.size player.rotation player.gun
+                { position = Gun.end player.position player.dimensions player.rotation player.gun
                 , direction = forward player
                 , speed = 500
                 , damage = 100

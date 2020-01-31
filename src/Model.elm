@@ -3,6 +3,7 @@ module Model exposing (Flags, Load(..), Model, Sprites, init)
 import Array exposing (Array)
 import Canvas.Texture exposing (Texture)
 import Component.Player as Player exposing (Player, init)
+import Drawing.AnimationData exposing (AnimationData)
 import Msg exposing (Msg(..))
 import Utility exposing (mapTupleUniform)
 

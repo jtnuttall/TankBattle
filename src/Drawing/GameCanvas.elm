@@ -83,7 +83,7 @@ renderTank model sprites renderable =
             model.player
 
         ( sizex, sizey ) =
-            player.size
+            player.dimensions
 
         body =
             veryUglyUnsafeGet 0 sprites.tank.body

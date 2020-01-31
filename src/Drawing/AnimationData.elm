@@ -1,4 +1,4 @@
-module AnimationData exposing (..)
+module Drawing.AnimationData exposing (..)
 
 import Array as Array exposing (Array)
 import Canvas.Texture exposing (Texture)
@@ -14,6 +14,6 @@ type alias AnimationData =
 
 getFrame : AnimationData -> Texture
 getFrame data =
-    data
+    data.frames
         |> Array.get data.animationFrame
         |> withDefault data.zeroFrame

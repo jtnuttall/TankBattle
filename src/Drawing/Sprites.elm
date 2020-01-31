@@ -3,7 +3,7 @@ module Drawing.Sprites exposing (Load(..), Sprites, init, update)
 import Array
 import Canvas.Texture as Texture exposing (Texture)
 import Constants
-import Drawing.AnimationData exposing (AnimationData)
+import Drawing.AnimationData as AnimationData exposing (AnimationData)
 
 
 type Load a
@@ -35,7 +35,7 @@ init : Texture -> Sprites
 init sheet =
     let
         ( gunStart, gunEnd ) =
-            ( 3, 11 )
+            ( 3, 10 )
 
         ( bodyStart, bodyEnd ) =
             ( 1, 2 )
@@ -69,7 +69,18 @@ update : Float -> Load Sprites -> Load Sprites
 update deltaTime loadSprites =
     case loadSprites of
         Success sprites ->
-            loadSprites
+            let
+                tank =
+                    sprites.tank
+            in
+            { sprites
+                | tank =
+                    { tank
+                        | gun = AnimationData.update deltaTime tank.gun
+                        , body = AnimationData.update deltaTime tank.body
+                    }
+            }
+                |> Success
 
         _ ->
             loadSprites

@@ -26,13 +26,19 @@ update : Float -> AnimationData -> AnimationData
 update deltaTime data =
     let
         doUpdate =
-            data.time > data.step
+            data.time >= data.step
 
         cycleFrames =
-            cycleI 0 (Array.length data.frames)
+            cycleI 0 (Array.length data.frames - 1)
     in
     { data
-        | frameIndex =
+        | time =
+            if not doUpdate then
+                data.time + deltaTime
+
+            else
+                0
+        , frameIndex =
             if doUpdate then
                 cycleFrames (data.frameIndex + 1)
 

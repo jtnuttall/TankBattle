@@ -20,11 +20,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Frame deltaTime ->
-            if model.isPaused then
-                ( model, Cmd.none )
-
-            else
-                ( deltaTimeUpdate (deltaTime / 1000) model, Cmd.none )
+            ( deltaTimeUpdate (deltaTime / 1000) model, Cmd.none )
 
         Resize width height ->
             ( { model | gameDims = ( toFloat width, toFloat height ) }

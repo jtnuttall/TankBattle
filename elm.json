@@ -17,7 +17,8 @@
             "jfmengels/review-unused": "1.0.4",
             "joakin/elm-canvas": "4.0.1",
             "mpizenberg/elm-pointer-events": "4.0.1",
-            "ohanhi/keyboard": "2.0.0"
+            "ohanhi/keyboard": "2.0.0",
+            "rundis/elm-bootstrap": "5.2.0"
         },
         "indirect": {
             "elm/bytes": "1.0.8",

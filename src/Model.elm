@@ -45,8 +45,15 @@ init flags =
         gameDims =
             ( flags.windowWidth, flags.windowHeight )
 
+        playerPosition =
+            let
+                ( x, y ) =
+                    gameDims
+            in
+            ( x / 2 - 64, y / 2 - 64 )
+
         ( player1, player1Cmd ) =
-            Player.init (mapTupleUniform (\x -> x / 2) gameDims) 1 "__player1__"
+            Player.init playerPosition 1 "__player1__"
     in
     ( { count = 0
       , deltaTime = 0

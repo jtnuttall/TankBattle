@@ -83,10 +83,6 @@ center player =
     ( x + sizex / 2, y + sizey / 2 )
 
 
-
--- position = Gun.end player.position apparentDims player.rotation player.gun
-
-
 updateProjectiles : Float -> ( Float, Float ) -> Player -> Player
 updateProjectiles deltaTime gameDims player =
     let

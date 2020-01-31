@@ -5,7 +5,6 @@ import Canvas.Texture exposing (Texture)
 import Component.Player as Player exposing (Player, init)
 import Drawing.AnimationData exposing (AnimationData)
 import Msg exposing (Msg(..))
-import Utility exposing (mapTupleUniform)
 
 
 type alias Model =
@@ -27,8 +26,8 @@ type Load a
 
 type alias Sprites =
     { tank :
-        { body : Array Texture
-        , gun : Array Texture
+        { body : AnimationData
+        , gun : AnimationData
         }
     }
 

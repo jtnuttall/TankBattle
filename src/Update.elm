@@ -28,7 +28,7 @@ update msg model =
             )
 
         KeyPress key ->
-            ( playerMoveUpdate key model, Cmd.none )
+            ( playerKeyboardUpdate key model, Cmd.none )
 
         TextureLoaded Nothing ->
             ( { model | sprites = Failure }, Cmd.none )
@@ -57,8 +57,8 @@ deltaTimeUpdate deltaTime model =
     }
 
 
-playerMoveUpdate : Keyboard.Msg -> Model -> Model
-playerMoveUpdate key model =
+playerKeyboardUpdate : Keyboard.Msg -> Model -> Model
+playerKeyboardUpdate key model =
     let
         pressedKeys =
             Keyboard.updateWithParser gameKeys key model.player.pressedKeys
@@ -77,28 +77,42 @@ playerMoveUpdate key model =
     }
 
 
+sprite : Float -> Float -> Texture -> Texture
+sprite x y sheet =
+    Texture.sprite
+        { x = x * 128
+        , y = y * 128
+        , width = 128
+        , height = 128
+        }
+        sheet
+
+
 spritesUpdate : Texture -> Sprites
 spritesUpdate sheet =
     let
-        sprite x y =
-            Texture.sprite
-                { x = x * 128
-                , y = y * 128
-                , width = 128
-                , height = 128
-                }
-                sheet
+        ( gunStart, gunEnd ) =
+            ( 3, 11 )
+
+        ( bodyStart, bodyEnd ) =
+            ( 1, 2 )
+
+        animationFrames start end =
+            List.range start end
+                |> List.map toFloat
+                |> List.map (\x -> sprite x 0 sheet)
+                |> Array.fromList
     in
     { tank =
         { gun =
-            List.range 3 11
-                |> List.map toFloat
-                |> List.map (\x -> sprite x 0)
-                |> Array.fromList
+            { frameIndex = 0
+            , zeroFrame = sprite gunStart 0 sheet
+            , frames = animationFrames gunStart gunEnd
+            }
         , body =
-            List.range 1 2
-                |> List.map toFloat
-                |> List.map (\x -> sprite x 0)
-                |> Array.fromList
+            { frameIndex = 0
+            , zeroFrame = sprite bodyStart 0 sheet
+            , frames = animationFrames bodyStart bodyEnd
+            }
         }
     }

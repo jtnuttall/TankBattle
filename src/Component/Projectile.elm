@@ -1,7 +1,5 @@
 module Component.Projectile exposing (..)
 
-import Utility exposing (mapTupleUniform)
-
 
 type alias Projectile =
     { position : ( Float, Float )

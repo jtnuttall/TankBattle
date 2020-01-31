@@ -10,8 +10,9 @@ import Color
 import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile exposing (Projectile)
+import Drawing.AnimationData exposing (getFrame)
 import Model exposing (Load(..), Model, Sprites)
-import Utility exposing (mapTuple, prettyInt, uncurry, veryUglyUnsafeGet)
+import Utility exposing (prettyInt, uncurry)
 
 
 canvas : Model -> List Renderable
@@ -86,10 +87,10 @@ renderTank model sprites renderable =
             player.dimensions
 
         body =
-            veryUglyUnsafeGet 0 sprites.tank.body
+            getFrame sprites.tank.body
 
         gun =
-            veryUglyUnsafeGet 0 sprites.tank.gun
+            getFrame sprites.tank.gun
     in
     renderable
         ++ [ Canvas.texture

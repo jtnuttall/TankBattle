@@ -6,14 +6,14 @@ import Maybe exposing (withDefault)
 
 
 type alias AnimationData =
-    { animationFrame : Int
-    , zeroFrame : Texture
+    { frameIndex : Int
     , frames : Array Texture
+    , zeroFrame : Texture
     }
 
 
 getFrame : AnimationData -> Texture
 getFrame data =
     data.frames
-        |> Array.get data.animationFrame
+        |> Array.get data.frameIndex
         |> withDefault data.zeroFrame

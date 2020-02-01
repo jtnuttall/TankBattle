@@ -68,7 +68,11 @@ updateData deltaTime nTimesIn data =
                 { dataUpdated | nTimes = Just (n - 1) }
 
             else
-                { data | nTimes = Just newN }
+                { data
+                    | nTimes = Just newN
+                    , time = 0
+                    , frameIndex = 0
+                }
 
         ( Just n, Nothing ) ->
             if n > 0 then
@@ -89,21 +93,3 @@ update deltaTime animationUpdates data =
     data
         |> updateData deltaTime animationUpdates.tank.body
         |> updateData deltaTime animationUpdates.tank.gun
-
-
-run : AnimationData -> AnimationData
-run data =
-    { data
-        | time = 0
-        , frameIndex = 0
-        , nTimes = Nothing
-    }
-
-
-runN : Int -> AnimationData -> AnimationData
-runN n data =
-    { data
-        | time = 0
-        , frameIndex = 0
-        , nTimes = Just n
-    }

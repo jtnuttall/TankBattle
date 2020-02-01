@@ -5,6 +5,7 @@ type alias Gun =
     { dimensions : ( Float, Float )
     , timeSinceFiring : Float
     , firingInterval : Float
+    , isFiring : Bool
     }
 
 
@@ -13,6 +14,7 @@ init ( playerWidth, playerHeight ) playerPosition =
     { dimensions = ( playerWidth / 4, playerHeight / 2 )
     , timeSinceFiring = 0
     , firingInterval = 0.5
+    , isFiring = False
     }
 
 

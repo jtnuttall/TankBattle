@@ -46,7 +46,12 @@ update msg model =
             , Cmd.none
             )
 
-        _ ->
+        Fire times ->
+            ( model
+            , Cmd.none
+            )
+
+        NoOp ->
             ( model, Cmd.none )
 
 
@@ -55,10 +60,23 @@ deltaTimeUpdate deltaTime model =
     let
         player =
             model.player
+
+        animationData =
+            { tank =
+                { gun =
+                    Just <|
+                        if Player.shouldFire player || player.gun.timeSinceFiring < player.gun.firingInterval then
+                            8
+
+                        else
+                            0
+                , body = Nothing
+                }
+            }
     in
     { model
         | deltaTime = deltaTime
-        , sprites = Sprites.update deltaTime model.sprites
+        , sprites = Sprites.update deltaTime animationData model.sprites
         , player =
             player
                 |> Player.updateProjectiles deltaTime model.gameDims
@@ -86,5 +104,4 @@ playerKeyboardUpdate key model =
             else
                 model.isPaused
         , player = { player | pressedKeys = pressedKeys }
-        , sprites = Sprites.running (List.member Keyboard.Spacebar pressedKeys) model.sprites
     }

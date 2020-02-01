@@ -1,9 +1,9 @@
-module Drawing.Sprites exposing (Load(..), Sprites, init, running, update)
+module Drawing.Sprites exposing (Load(..), Sprites, init, update)
 
 import Array
 import Canvas.Texture as Texture exposing (Texture)
 import Constants
-import Drawing.AnimationData as AnimationData exposing (AnimationData)
+import Drawing.AnimationData as AnimationData exposing (AnimationData, AnimationUpdates)
 
 
 type Load a
@@ -34,12 +34,6 @@ sprite x y sheet =
 init : Texture -> Sprites
 init sheet =
     let
-        ( gunStart, gunEnd ) =
-            ( 3, 10 )
-
-        ( bodyStart, bodyEnd ) =
-            ( 1, 2 )
-
         animationFrames start end =
             List.range start end
                 |> List.map toFloat
@@ -49,28 +43,26 @@ init sheet =
     { tank =
         { gun =
             { frameIndex = 0
-            , running = False
-            , done = False
+            , nTimes = Just 0
             , time = 0
             , step = Constants.gunAnimationStep
-            , zeroFrame = sprite gunStart 0 sheet
-            , frames = animationFrames gunStart gunEnd
+            , zeroFrame = sprite (toFloat Constants.gunStart) 0 sheet
+            , frames = animationFrames Constants.gunStart Constants.gunEnd
             }
         , body =
             { frameIndex = 0
-            , running = True
-            , done = False
+            , nTimes = Just 0
             , time = 0
             , step = Constants.bodyAnimationStep
-            , zeroFrame = sprite bodyStart 0 sheet
-            , frames = animationFrames bodyStart bodyEnd
+            , zeroFrame = sprite (toFloat Constants.bodyStart) 0 sheet
+            , frames = animationFrames Constants.bodyStart Constants.bodyEnd
             }
         }
     }
 
 
-update : Float -> Load Sprites -> Load Sprites
-update deltaTime loadSprites =
+update : Float -> AnimationUpdates -> Load Sprites -> Load Sprites
+update deltaTime nTimes loadSprites =
     case loadSprites of
         Success sprites ->
             let
@@ -80,28 +72,8 @@ update deltaTime loadSprites =
             { sprites
                 | tank =
                     { tank
-                        | gun = AnimationData.update deltaTime tank.gun
-                        , body = AnimationData.update deltaTime tank.body
-                    }
-            }
-                |> Success
-
-        _ ->
-            loadSprites
-
-
-running : Bool -> Load Sprites -> Load Sprites
-running isRunning loadSprites =
-    case loadSprites of
-        Success sprites ->
-            let
-                tank =
-                    sprites.tank
-            in
-            { sprites
-                | tank =
-                    { tank
-                        | gun = AnimationData.running isRunning tank.gun
+                        | gun = AnimationData.update deltaTime nTimes tank.gun
+                        , body = AnimationData.update deltaTime nTimes tank.body
                     }
             }
                 |> Success

@@ -21,3 +21,28 @@ gunAnimationStep =
 bodyAnimationStep : Float
 bodyAnimationStep =
     0.1
+
+
+gunStart : Int
+gunStart =
+    3
+
+
+gunEnd : Int
+gunEnd =
+    10
+
+
+gunFrames : Int
+gunFrames =
+    gunEnd - gunStart + 1
+
+
+bodyStart : Int
+bodyStart =
+    1
+
+
+bodyEnd : Int
+bodyEnd =
+    2

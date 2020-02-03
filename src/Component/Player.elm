@@ -1,4 +1,4 @@
-module Component.Player exposing (..)
+module Component.Player exposing (Player, center, forward, init, shouldFire, update)
 
 import Component.Collider as Collider exposing (Collider(..))
 import Component.Gun as Gun exposing (Gun)
@@ -87,7 +87,14 @@ shouldFire : Player -> Bool
 shouldFire player =
     List.member Spacebar player.pressedKeys
         && player.gun.timeSinceFiring
-        > player.gun.firingInterval
+        >= player.gun.firingInterval
+
+
+update : Float -> ( Float, Float ) -> Player -> Player
+update deltaTime gameDims player =
+    player
+        |> updateProjectiles deltaTime gameDims
+        |> transform deltaTime gameDims
 
 
 updateProjectiles : Float -> ( Float, Float ) -> Player -> Player

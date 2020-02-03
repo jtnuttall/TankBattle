@@ -9,5 +9,4 @@ type Msg
     | Resize Int Int
     | KeyPress Keyboard.Msg
     | TextureLoaded (Maybe Canvas.Texture)
-    | Fire Int
     | NoOp

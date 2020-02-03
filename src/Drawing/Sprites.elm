@@ -62,7 +62,7 @@ init sheet =
 
 
 update : Float -> AnimationUpdates -> Load Sprites -> Load Sprites
-update deltaTime nTimes loadSprites =
+update deltaTime updates loadSprites =
     case loadSprites of
         Success sprites ->
             let
@@ -72,8 +72,8 @@ update deltaTime nTimes loadSprites =
             { sprites
                 | tank =
                     { tank
-                        | gun = AnimationData.update deltaTime nTimes tank.gun
-                        , body = AnimationData.update deltaTime nTimes tank.body
+                        | gun = AnimationData.update deltaTime updates tank.gun
+                        , body = AnimationData.update deltaTime updates tank.body
                     }
             }
                 |> Success

@@ -46,11 +46,6 @@ update msg model =
             , Cmd.none
             )
 
-        Fire times ->
-            ( model
-            , Cmd.none
-            )
-
         NoOp ->
             ( model, Cmd.none )
 
@@ -64,12 +59,11 @@ deltaTimeUpdate deltaTime model =
         animationData =
             { tank =
                 { gun =
-                    Just <|
-                        if Player.shouldFire player || player.gun.timeSinceFiring < player.gun.firingInterval then
-                            8
+                    if Player.shouldFire player then
+                        Just 1
 
-                        else
-                            0
+                    else
+                        Just 0
                 , body = Nothing
                 }
             }
@@ -77,10 +71,7 @@ deltaTimeUpdate deltaTime model =
     { model
         | deltaTime = deltaTime
         , sprites = Sprites.update deltaTime animationData model.sprites
-        , player =
-            player
-                |> Player.updateProjectiles deltaTime model.gameDims
-                |> Player.transform deltaTime model.gameDims
+        , player = Player.update deltaTime model.gameDims model.player
     }
 
 

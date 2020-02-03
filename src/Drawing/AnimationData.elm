@@ -42,17 +42,28 @@ updateAnimation deltaTime data =
     in
     { data
         | time =
-            if not doUpdate then
-                data.time + deltaTime
+            if doUpdate then
+                0
 
             else
-                0
+                data.time + deltaTime
         , frameIndex =
             if doUpdate then
                 cycleFrames (data.frameIndex + 1)
 
             else
                 data.frameIndex
+        , nTimes =
+            if doUpdate then
+                case data.nTimes of
+                    Just n ->
+                        Just (n - 1)
+
+                    Nothing ->
+                        Nothing
+
+            else
+                data.nTimes
     }
 
 
@@ -72,13 +83,12 @@ updateData deltaTime nTimesIn data =
 
         ( Just n, Nothing ) ->
             if n > 0 then
-                Debug.log "what?" { dataUpdated | nTimes = Just (n - 1) }
+                { dataUpdated | nTimes = Just (n - 1) }
 
             else
                 data
 
         ( Nothing, Just newN ) ->
-            --Debug.log "newN"
             { dataUpdated | nTimes = Just newN }
 
         _ ->
@@ -89,4 +99,4 @@ update : Float -> AnimationUpdates -> AnimationData -> AnimationData
 update deltaTime animationUpdates data =
     data
         |> updateData deltaTime animationUpdates.tank.body
-        |> updateData deltaTime (Debug.log "gun" <| animationUpdates.tank.gun)
+        |> updateData deltaTime animationUpdates.tank.gun

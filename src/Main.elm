@@ -15,7 +15,7 @@ import Update
 
 textures : List (Texture.Source Msg)
 textures =
-    [ Texture.loadFromImageUrl "./assets/sheet.png" TextureLoaded
+    [ Texture.loadFromImageUrl "./assets/sheet2.png" TextureLoaded
     ]
 
 

@@ -16,6 +16,12 @@ type alias AnimationData =
     }
 
 
+type AnimationState
+    = Running
+    | Finishing
+    | Stopped
+
+
 type alias AnimationUpdates =
     { tank :
         { body : Maybe Int
@@ -39,6 +45,9 @@ updateAnimation deltaTime data =
 
         cycleFrames =
             cycleI 0 (Array.length data.frames - 1)
+
+        nextFrame =
+            cycleFrames (data.frameIndex + 1)
     in
     { data
         | time =
@@ -86,7 +95,7 @@ updateData deltaTime nTimesIn data =
                 { dataUpdated | nTimes = Just (n - 1) }
 
             else
-                data
+                { data | nTimes = Nothing }
 
         ( Nothing, Just newN ) ->
             { dataUpdated | nTimes = Just newN }

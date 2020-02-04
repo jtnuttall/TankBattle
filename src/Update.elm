@@ -58,12 +58,7 @@ deltaTimeUpdate deltaTime model =
 
         animationData =
             { tank =
-                { gun =
-                    if Player.shouldFire player then
-                        Just 1
-
-                    else
-                        Just 0
+                { gun = Nothing
                 , body = Nothing
                 }
             }

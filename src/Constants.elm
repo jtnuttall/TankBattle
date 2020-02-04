@@ -40,7 +40,7 @@ gunFrames =
 
 bodyStart : Int
 bodyStart =
-    1
+    0
 
 
 bodyEnd : Int

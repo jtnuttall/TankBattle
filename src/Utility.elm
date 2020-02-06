@@ -8,6 +8,24 @@ uncurry f ( a, b ) =
     f a b
 
 
+zipWith : (a -> b -> c) -> List a -> List b -> List c
+zipWith f xsin ysin =
+    case ( xsin, ysin ) of
+        ( x :: xs, y :: ys ) ->
+            f x y :: zipWith f xs ys
+
+        ( _, _ ) ->
+            []
+
+
+anyOf : List a -> List a -> Bool
+anyOf queryList sampleList =
+    sampleList
+        |> List.repeat (List.length queryList)
+        |> zipWith List.member queryList
+        |> List.any identity
+
+
 
 -- if only we had typeclasses... :(
 

@@ -39,24 +39,24 @@ init sheet =
                 |> List.map toFloat
                 |> List.map (\x -> sprite x 0 sheet)
                 |> Array.fromList
+
+        -- Due to the way arrays work, we must provide a default for array indexing.
+        -- This will work.
+        gunZeroFrame =
+            sprite (toFloat Constants.gunStart) 0 sheet
+
+        gunFrames =
+            animationFrames Constants.gunStart Constants.gunEnd
+
+        bodyZeroFrame =
+            sprite (toFloat Constants.bodyStart) 0 sheet
+
+        bodyFrames =
+            animationFrames Constants.bodyStart Constants.bodyEnd
     in
     { tank =
-        { gun =
-            { frameIndex = 0
-            , nTimes = Just 0
-            , time = 0
-            , step = Constants.gunAnimationStep
-            , zeroFrame = sprite (toFloat Constants.gunStart) 0 sheet
-            , frames = animationFrames Constants.gunStart Constants.gunEnd
-            }
-        , body =
-            { frameIndex = 0
-            , nTimes = Just 0
-            , time = 0
-            , step = Constants.bodyAnimationStep
-            , zeroFrame = sprite (toFloat Constants.bodyStart) 0 sheet
-            , frames = animationFrames Constants.bodyStart Constants.bodyEnd
-            }
+        { gun = AnimationData.init Constants.gunAnimationStep gunZeroFrame gunFrames
+        , body = AnimationData.init Constants.bodyAnimationStep bodyZeroFrame bodyFrames
         }
     }
 
@@ -72,8 +72,8 @@ update deltaTime updates loadSprites =
             { sprites
                 | tank =
                     { tank
-                        | gun = AnimationData.update deltaTime updates tank.gun
-                        , body = AnimationData.update deltaTime updates tank.body
+                        | gun = AnimationData.update deltaTime updates.tank.gun tank.gun
+                        , body = AnimationData.update deltaTime updates.tank.body tank.body
                     }
             }
                 |> Success

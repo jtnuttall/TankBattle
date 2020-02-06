@@ -19,6 +19,7 @@ type alias Player =
     , moveSpeed : Float
     , rotateSpeed : Float
     , pressedKeys : List Key
+    , keyChange : Maybe KeyChange
     , projectiles : List Projectile
     , collider : Collider
     , gun : Gun
@@ -55,9 +56,10 @@ init ( x, y ) playerId playerName =
       , position = ( x, y )
       , rotation = 0
       , dimensions = ( width, height )
-      , moveSpeed = 100
+      , moveSpeed = 250
       , rotateSpeed = 2
       , pressedKeys = []
+      , keyChange = Nothing
       , projectiles = []
       , collider = AABBCollider aabb
       , gun = Gun.init ( width, height ) ( x, y )

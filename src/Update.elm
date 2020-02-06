@@ -6,11 +6,27 @@ import Component.Gun as Gun
 import Component.Player as Player exposing (Player)
 import Component.Projectile as Projectile exposing (Projectile)
 import Constants
+import Drawing.AnimationData as Animation exposing (AnimationCommand(..))
 import Drawing.Sprites as Sprites exposing (Sprites)
-import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser, RawKey(..))
+import Lib.Keyboard as Keyboard exposing (Key(..), KeyChange(..), KeyParser)
 import Lib.Keyboard.Arrows exposing (arrowKey, wasd)
+import List.Extra as List
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Utility exposing (anyOf)
+
+
+wasd : List Key
+wasd =
+    [ Character "W"
+    , Character "A"
+    , Character "S"
+    , Character "D"
+    , Character "w"
+    , Character "a"
+    , Character "s"
+    , Character "d"
+    ]
 
 
 gameKeys : KeyParser
@@ -58,8 +74,31 @@ deltaTimeUpdate deltaTime model =
 
         animationData =
             { tank =
-                { gun = Nothing
-                , body = Nothing
+                { gun =
+                    case player.keyChange of
+                        Just (KeyDown Spacebar) ->
+                            Animation.Run
+
+                        Just (KeyUp Spacebar) ->
+                            Animation.Finish
+
+                        _ ->
+                            if List.member Spacebar player.pressedKeys then
+                                Animation.Run
+
+                            else
+                                Animation.NoChange
+                , body =
+                    if anyOf wasd player.pressedKeys then
+                        Animation.Run
+
+                    else
+                        Animation.Stop
+
+                --if List.any (List.map List.member wasd) then
+                --    Animation.Run
+                --else
+                --    Animation.Stop
                 }
             }
     in
@@ -73,8 +112,8 @@ deltaTimeUpdate deltaTime model =
 playerKeyboardUpdate : Keyboard.Msg -> Model -> Model
 playerKeyboardUpdate key model =
     let
-        pressedKeys =
-            Keyboard.updateWithParser gameKeys key model.player.pressedKeys
+        ( pressedKeys, keyChange ) =
+            Keyboard.updateWithKeyChange gameKeys key model.player.pressedKeys
 
         player =
             model.player
@@ -89,5 +128,9 @@ playerKeyboardUpdate key model =
 
             else
                 model.isPaused
-        , player = { player | pressedKeys = pressedKeys }
+        , player =
+            { player
+                | pressedKeys = pressedKeys
+                , keyChange = keyChange
+            }
     }

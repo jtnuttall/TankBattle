@@ -1,4 +1,12 @@
-module Drawing.AnimationData exposing (AnimationData, AnimationUpdates, getFrame, update)
+module Drawing.AnimationData exposing
+    ( AnimationCommand(..)
+    , AnimationData
+    , AnimationState(..)
+    , AnimationUpdates
+    , getFrame
+    , init
+    , update
+    )
 
 import Array as Array exposing (Array)
 import Canvas.Texture exposing (Texture)
@@ -8,11 +16,11 @@ import Utility exposing (cycleI)
 
 type alias AnimationData =
     { frameIndex : Int
-    , nTimes : Maybe Int
+    , state : AnimationState
     , time : Float
     , step : Float
-    , frames : Array Texture
     , zeroFrame : Texture
+    , frames : Array Texture
     }
 
 
@@ -22,11 +30,29 @@ type AnimationState
     | Stopped
 
 
+type AnimationCommand
+    = Run
+    | Finish
+    | Stop
+    | NoChange
+
+
 type alias AnimationUpdates =
     { tank :
-        { body : Maybe Int
-        , gun : Maybe Int
+        { body : AnimationCommand
+        , gun : AnimationCommand
         }
+    }
+
+
+init : Float -> Texture -> Array Texture -> AnimationData
+init step zeroFrame frames =
+    { frameIndex = 0
+    , state = Stopped
+    , time = 0
+    , step = step
+    , zeroFrame = zeroFrame
+    , frames = frames
     }
 
 
@@ -40,8 +66,11 @@ getFrame data =
 updateAnimation : Float -> AnimationData -> AnimationData
 updateAnimation deltaTime data =
     let
+        time =
+            data.time
+
         doUpdate =
-            data.time >= data.step
+            time >= data.step
 
         cycleFrames =
             cycleI 0 (Array.length data.frames - 1)
@@ -62,50 +91,64 @@ updateAnimation deltaTime data =
 
             else
                 data.frameIndex
-        , nTimes =
-            if doUpdate then
-                case data.nTimes of
-                    Just n ->
-                        Just (n - 1)
+        , state =
+            case data.state of
+                Finishing ->
+                    if nextFrame == 0 then
+                        Stopped
 
-                    Nothing ->
-                        Nothing
+                    else
+                        Finishing
 
-            else
-                data.nTimes
+                state ->
+                    state
     }
 
 
-updateData : Float -> Maybe Int -> AnimationData -> AnimationData
-updateData deltaTime nTimesIn data =
-    let
-        dataUpdated =
-            updateAnimation deltaTime data
-    in
-    case ( data.nTimes, nTimesIn ) of
-        ( Just n, Just newN ) ->
-            if n > 0 then
-                { dataUpdated | nTimes = Just (n - 1) }
+update : Float -> AnimationCommand -> AnimationData -> AnimationData
+update deltaTime command data =
+    case ( command, data.state ) of
+        ( Run, Running ) ->
+            data
+                |> updateAnimation deltaTime
 
-            else
-                { data | nTimes = Just newN }
+        ( Run, Finishing ) ->
+            { data | state = Running }
+                |> updateAnimation deltaTime
 
-        ( Just n, Nothing ) ->
-            if n > 0 then
-                { dataUpdated | nTimes = Just (n - 1) }
+        ( Run, Stopped ) ->
+            { data | state = Running }
+                |> updateAnimation deltaTime
 
-            else
-                { data | nTimes = Nothing }
+        ( Finish, Running ) ->
+            { data | state = Finishing }
+                |> updateAnimation deltaTime
 
-        ( Nothing, Just newN ) ->
-            { dataUpdated | nTimes = Just newN }
+        ( Finish, Finishing ) ->
+            data
+                |> updateAnimation deltaTime
 
-        _ ->
-            dataUpdated
+        ( Finish, Stopped ) ->
+            data
 
+        ( Stop, Running ) ->
+            { data | state = Stopped }
+                |> updateAnimation deltaTime
 
-update : Float -> AnimationUpdates -> AnimationData -> AnimationData
-update deltaTime animationUpdates data =
-    data
-        |> updateData deltaTime animationUpdates.tank.body
-        |> updateData deltaTime animationUpdates.tank.gun
+        ( Stop, Finishing ) ->
+            data
+                |> updateAnimation deltaTime
+
+        ( Stop, Stopped ) ->
+            data
+
+        ( NoChange, Running ) ->
+            data
+                |> updateAnimation deltaTime
+
+        ( NoChange, Finishing ) ->
+            data
+                |> updateAnimation deltaTime
+
+        ( NoChange, Stopped ) ->
+            data

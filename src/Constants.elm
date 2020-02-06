@@ -1,5 +1,6 @@
 module Constants exposing (..)
 
+--import Keyboard exposing (Key(..))
 -- to be imported qualified
 
 
@@ -15,7 +16,7 @@ textureHeight =
 
 gunAnimationStep : Float
 gunAnimationStep =
-    0.1
+    0.055
 
 
 bodyAnimationStep : Float
